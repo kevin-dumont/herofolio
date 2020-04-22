@@ -35,13 +35,21 @@ const Modal = ({
   const escapePressed = useKeyPress(["Escape"]);
 
   useEffect(() => {
+    let timeout: number;
+
     if (show === true) {
       setToBeVisible(true);
       setDisappear(false);
     } else {
       setDisappear(true);
-      setTimeout(() => setToBeVisible(false), 500);
+      timeout = setTimeout(() => setToBeVisible(false), 500);
     }
+
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
   }, [show]);
 
   useEffect(() => {

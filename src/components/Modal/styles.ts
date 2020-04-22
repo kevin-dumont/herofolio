@@ -16,17 +16,6 @@ const modalAnimation = keyframes`
   }
 `;
 
-const modalAnimationDisappear = keyframes`
-  0% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.6);
-  }
-`;
-
 export const ModalBg = styled.div<ModalBg>`
   display: flex;
   flex-direction: column;
@@ -39,7 +28,10 @@ export const ModalBg = styled.div<ModalBg>`
   left: 0;
   right: 0;
   color: #044e6d;
+  overflow-y: auto;
   background: #daf4ff;
+  backface-visibility: hidden;
+  transition: all 0.5s ease;
 
   ${({ animationDisabled }) =>
     !animationDisabled &&
@@ -50,7 +42,8 @@ export const ModalBg = styled.div<ModalBg>`
   ${({ disappear }) =>
     disappear === true &&
     css`
-      animation: ${modalAnimationDisappear} 0.5s ease;
+      opacity: 0;
+      transform: scale(1.6);
     `}
 `;
 

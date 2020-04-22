@@ -50,7 +50,6 @@ export interface MoveParms {
 
 export interface GameEngineProps {
   children: (params: ChildrenParams) => ReactNode | ReactNode[];
-  groundHeight: number;
   elementWidth: number;
   maxRightOffset: number;
   isActive: boolean;
@@ -107,7 +106,6 @@ const GameEngine = ({
   onTop,
   onResize,
   children,
-  groundHeight,
   elementWidth,
   maxRightOffset,
   isActive,

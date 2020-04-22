@@ -148,7 +148,6 @@ const Profile = () => {
         onJump={onJump}
         onTop={onTop}
         onMove={onMove}
-        groundHeight={GROUND_HEIGHT}
         maxRightOffset={GRID_WIDTH}
         nbLines={GRID_HEIGHT}
         elementWidth={GRID_ELEMENT_WIDTH}

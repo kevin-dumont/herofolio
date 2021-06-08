@@ -1,6 +1,7 @@
-import styled, { keyframes } from "styled-components";
-import { MEDIA, FONTS } from "../../constants/constants";
-import { get3dTextShadow } from "../../services/helpers";
+import styled, { keyframes } from 'styled-components';
+
+import { MEDIA, FONTS } from '@/constants/constants';
+import { get3dTextShadow } from '@/services/helpers';
 
 export const ModalRight = styled.div`
   padding: 30px;
@@ -13,7 +14,7 @@ export const ModalRight = styled.div`
 
   p {
     line-height: 2.6rem;
-    font-family: "Montserrat", sans-serif;
+    font-family: 'Montserrat', sans-serif;
   }
 `;
 
@@ -43,7 +44,7 @@ const commandsHelperAnimate = keyframes`
 export const CommandsHelper = styled.div`
   font-family: ${FONTS.MONO};
   color: #fff;
-  text-shadow: ${get3dTextShadow("#58402a", 2)};
+  text-shadow: ${get3dTextShadow('#58402a', 2)};
   animation: infinite 0.7s ease ${commandsHelperAnimate};
   transform-origin: center;
   text-align: center;

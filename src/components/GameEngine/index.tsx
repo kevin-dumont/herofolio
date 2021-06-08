@@ -1,21 +1,19 @@
-import React, { useEffect, useState, ReactNode, useRef } from "react";
+import React, { useEffect, useState, ReactNode, useRef } from 'react';
+import useInterval from 'use-interval';
 
-import useKeyPress from "../../hooks/useKeyPress";
-import useInterval from "use-interval";
-import useSizes from "../../hooks/useSizes";
-
-import Commands from "./Commands";
-import Modal from "../Modal";
-import Flex from "../Flex";
+import useKeyPress from '@/hooks/useKeyPress';
+import useSizes from '@/hooks/useSizes';
+import Modal from '@/components/Modal';
+import Flex from '@/components/Flex';
+import { Loader } from '@/components/Design/Loader';
 import {
   PhoneRotate,
   PhoneRotateText,
   GameContainer,
   Plan,
   GameElement,
-} from "./styles";
-import { Loader } from "../Design/Loader";
-import { add } from "../../services/functions";
+} from '@/components/GameEngine/styles';
+import Commands from '@/components/GameEngine/Commands';
 
 export interface ChildrenParams {
   heroLeft: number;
@@ -45,7 +43,7 @@ export interface ChildrenParams {
 }
 
 export interface MoveParms {
-  direction: "left" | "right";
+  direction: 'left' | 'right';
   position: number;
 }
 
@@ -89,13 +87,11 @@ const calculateOffsets = (
     if (maxRightOffset - position <= screenSize) {
       newHeroLeft = screenSize - Math.max(0, maxRightOffset - 4 - position);
       newFirstPlanLeft = -(maxRightOffset - screenSize - 4);
+    } else if (position > centerPosition) {
+      newFirstPlanLeft = -position + centerPosition;
+      newHeroLeft = centerPosition;
     } else {
-      if (position > centerPosition) {
-        newFirstPlanLeft = -position + centerPosition;
-        newHeroLeft = centerPosition;
-      } else {
-        newHeroLeft = position;
-      }
+      newHeroLeft = position;
     }
   }
 
@@ -138,11 +134,11 @@ const GameEngine = ({
   const [touchBottom, setTouchBottom] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
-  const top = useKeyPress(["ArrowUp", "z"]);
-  const left = useKeyPress(["ArrowLeft", "q"]);
-  const right = useKeyPress(["ArrowRight", "d"]);
-  const bottom = useKeyPress(["ArrowDown", "s"]);
-  const space = useKeyPress([" "]);
+  const top = useKeyPress(['ArrowUp', 'z']);
+  const left = useKeyPress(['ArrowLeft', 'q']);
+  const right = useKeyPress(['ArrowRight', 'd']);
+  const bottom = useKeyPress(['ArrowDown', 's']);
+  const space = useKeyPress([' ']);
 
   const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -159,7 +155,7 @@ const GameEngine = ({
   const rightHandler = () => {
     if ((!right && !touchRight) || left) return;
 
-    if (onMove) onMove({ direction: "right", position: positionInTheGrid + 1 });
+    if (onMove) onMove({ direction: 'right', position: positionInTheGrid + 1 });
 
     if (heroLeft >= centerPosition) {
       if (canGoToRight) {
@@ -181,19 +177,17 @@ const GameEngine = ({
     }
 
     if (onMove) {
-      onMove({ direction: "left", position: positionInTheGrid - 1 });
+      onMove({ direction: 'left', position: positionInTheGrid - 1 });
     }
 
     if (heroLeft > centerPosition || heroLeft < centerPosition) {
       if (heroLeft > 1) {
         setHeroLeft(heroLeft - 1);
       }
+    } else if (firstPlanLeft < 0) {
+      setFirstPlanLeft(firstPlanLeft + FIRST_PLAN_STEP);
     } else {
-      if (firstPlanLeft < 0) {
-        setFirstPlanLeft(firstPlanLeft + FIRST_PLAN_STEP);
-      } else {
-        setHeroLeft(heroLeft - 1);
-      }
+      setHeroLeft(heroLeft - 1);
     }
   };
 
@@ -271,7 +265,7 @@ const GameEngine = ({
 
   // Show commands on mobile only
   useEffect(() => {
-    if ("ontouchstart" in document.documentElement) setIsTouchDevice(true);
+    if ('ontouchstart' in document.documentElement) setIsTouchDevice(true);
 
     return () => {
       timeouts?.current.forEach(clearTimeout);
@@ -288,7 +282,7 @@ const GameEngine = ({
 
   // Trigger the jump
   useEffect(() => {
-    (space || touchSpace) && onJumping();
+    if (space || touchSpace) onJumping();
   }, [space, touchSpace]);
 
   // Recalculate offset when user is resizing the window
@@ -301,7 +295,7 @@ const GameEngine = ({
 
   return (
     <>
-      <Modal disableStartAnimation={true} show={isLoading}>
+      <Modal disableStartAnimation show={isLoading}>
         {({ Container }) => (
           <Container>
             <Flex direction="column" align="center" justify="center">
@@ -338,10 +332,7 @@ const GameEngine = ({
         getY,
       })}
 
-      <Modal
-        disableStartAnimation={true}
-        show={isTouchDevice && width < height}
-      >
+      <Modal disableStartAnimation show={isTouchDevice && width < height}>
         {({ Container }) => (
           <Container>
             <Flex direction="column" align="center" justify="center">

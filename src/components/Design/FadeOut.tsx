@@ -1,11 +1,11 @@
-import styled, { css } from "styled-components";
+import styled, { css } from 'styled-components';
 
-interface FadeOut {
+interface FadeOutType {
   hide: boolean;
   duration: string;
 }
 
-export const FadeOut = styled.div<FadeOut>`
+export const FadeOut = styled.div<FadeOutType>`
   opacity: 1;
   pointer-events: none;
   transition: opacity ${(p) => p.duration} ease;

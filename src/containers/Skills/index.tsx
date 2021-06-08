@@ -1,16 +1,17 @@
-import React from "react";
-import { Hero } from "../../components/Design/Hero";
-import { useHistory } from "react-router-dom";
-import useMedia from "../../hooks/useMedia";
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+
+import { Hero } from '@/components/Design/Hero';
+import useMedia from '@/hooks/useMedia';
 import {
   GRID_SIZES_SMALL,
   GRID_SIZES_LARGE,
   GRID_ELEMENT_WIDTH,
-} from "../../constants/constants";
-import GameEngine, { MoveParms } from "../../components/GameEngine";
-import { Ground } from "./styles";
-import { useAppDispatch } from "../../hooks/useAppStore";
-import { move } from "../../store/game";
+} from '@/constants/constants';
+import GameEngine, { MoveParms } from '@/components/GameEngine';
+import { useAppDispatch } from '@/hooks/useAppStore';
+import { move } from '@/store/game';
+import { Ground } from '@/containers/Skills/styles';
 
 export const GRID_WIDTH = 70;
 export const DOOR_HEIGHT = 3;
@@ -41,12 +42,12 @@ const Skills = () => {
   };
 
   const onMove = ({ position }: MoveParms) => {
-    dispatch(move({ location: "skills", position }));
+    dispatch(move({ location: 'skills', position }));
   };
 
   return (
     <GameEngine
-      isActive={true}
+      isActive
       onTop={onTop}
       onMove={onMove}
       maxRightOffset={GRID_WIDTH}
@@ -67,7 +68,7 @@ const Skills = () => {
         GameElement,
         Plan,
       }) => (
-        <GameContainer width={width} height={height} background={"#bce4ff"}>
+        <GameContainer width={width} height={height} background="#bce4ff">
           {/* Hero */}
 
           <GameElement
@@ -78,7 +79,7 @@ const Skills = () => {
             width={getX(1)}
           >
             <Hero
-              show={true}
+              show
               isWalking={isWalking && canJump}
               jumpHeight={getY(JUMP)}
               isJumping={isJumping}

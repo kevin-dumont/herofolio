@@ -1,7 +1,8 @@
-import React from "react";
-import styled from "styled-components";
+/* eslint-disable react/jsx-props-no-spreading */
+import React from 'react';
+import styled from 'styled-components';
 
-import { CloseProps, Close } from "../../components/Design/Icons/Close";
+import { CloseProps, Close } from '@/components/Design/Icons/Close';
 
 const Button = styled.button`
   background: none;
@@ -19,12 +20,10 @@ export interface CloseButtonProps extends CloseProps {
   ariaLabel?: string;
 }
 
-const CloseButton = ({ onClick, ariaLabel, ...props }: CloseProps) => {
-  return (
-    <Button onClick={onClick} aria-label={ariaLabel || "close"}>
-      <Close {...props} />
-    </Button>
-  );
-};
+const CloseButton = ({ onClick, ariaLabel, ...props }: CloseProps) => (
+  <Button onClick={onClick} aria-label={ariaLabel || 'close'}>
+    <Close {...props} />
+  </Button>
+);
 
 export default CloseButton;

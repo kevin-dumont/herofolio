@@ -1,9 +1,10 @@
-import React from "react";
-import { Cloud } from "./Cloud";
-import { GameElement } from "../GameEngine/styles";
+import React from 'react';
+
+import { GameElement as GameElementUI } from '@/components/GameEngine/styles';
+import { Cloud } from '@/components/Design/Cloud';
 
 export interface CloudsProps {
-  GameElement: typeof GameElement;
+  GameElement: typeof GameElementUI;
   getY: (distance: number) => number;
   getX: (distance: number) => number;
 }
@@ -20,9 +21,9 @@ const Clouds = ({ GameElement, getY, getX }: CloudsProps) => {
 
   return (
     <>
-      {clouds.map((cloud, id) => (
+      {clouds.map((cloud) => (
         <GameElement
-          key={id}
+          key={`${cloud.top + cloud.left}`}
           zIndex={1}
           top={getY(cloud.top)}
           left={getX(cloud.left)}

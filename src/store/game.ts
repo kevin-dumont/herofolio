@@ -1,6 +1,8 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../store";
-import { CoinType, Location } from "../definitions/entities";
+/* eslint-disable no-param-reassign */
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+import type { RootState } from '@/store';
+import { CoinType, Location } from '@/definitions/entities';
 
 interface GameState {
   coins: CoinType[];
@@ -38,7 +40,7 @@ const initialState: GameState = {
 };
 
 export const gameSlice = createSlice({
-  name: "game",
+  name: 'game',
   initialState,
   reducers: {
     takeCoin: (state, action: PayloadAction<CoinType>) => {

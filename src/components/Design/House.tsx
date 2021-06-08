@@ -1,10 +1,11 @@
-import React from "react";
-import styled from "styled-components";
-import { BrickBg } from "./BrickBg";
-import { Flower } from "./Vegetation";
-import { MEDIA } from "../../constants/constants";
+import React from 'react';
+import styled from 'styled-components';
 
-const darkRed = "#7d1010";
+import { MEDIA } from '@/constants/constants';
+import { BrickBg } from '@/components/Design/BrickBg';
+import { Flower } from '@/components/Design/Vegetation';
+
+const darkRed = '#7d1010';
 
 export const Bricks = styled(BrickBg)`
   position: absolute;
@@ -78,7 +79,7 @@ const Door = styled.div`
     border: 5px solid #d29b20;
     position: absolute;
     top: 30px;
-    content: "";
+    content: '';
     display: block;
     left: 0;
     right: 0;
@@ -86,7 +87,7 @@ const Door = styled.div`
   }
 
   &:after {
-    content: "";
+    content: '';
     display: block;
     top: 50%;
     position: absolute;
@@ -99,100 +100,98 @@ const Door = styled.div`
   }
 `;
 
-const House = () => {
-  return (
-    <>
-      <Porch />
-      <Door />
-      <Flower
-        zIndex={1}
-        bottom={10}
-        color="#ce3744"
-        rodColor={"#4ca446"}
-        left={-30}
-      />
-      <Flower
-        zIndex={1}
-        bottom={25}
-        color="#ffffff"
-        rodColor={"#4ca446"}
-        left={10}
-      />
-      <Flower
-        zIndex={1}
-        bottom={15}
-        color="#fd4f5e"
-        rodColor={"#4ca446"}
-        right={10}
-      />
-      <Flower
-        zIndex={1}
-        bottom={5}
-        color="#ffffff"
-        rodColor={"#4ca446"}
-        right={-20}
-      />
+const House = () => (
+  <>
+    <Porch />
+    <Door />
+    <Flower
+      zIndex={1}
+      bottom={10}
+      color="#ce3744"
+      rodColor="#4ca446"
+      left={-30}
+    />
+    <Flower
+      zIndex={1}
+      bottom={25}
+      color="#ffffff"
+      rodColor="#4ca446"
+      left={10}
+    />
+    <Flower
+      zIndex={1}
+      bottom={15}
+      color="#fd4f5e"
+      rodColor="#4ca446"
+      right={10}
+    />
+    <Flower
+      zIndex={1}
+      bottom={5}
+      color="#ffffff"
+      rodColor="#4ca446"
+      right={-20}
+    />
 
-      <RoofRight />
-      <RoofLeft />
-      <Bricks
-        style={{
-          top: 10,
-          right: 132,
-          left: 132,
-          bottom: "calc(100% - 25px)",
-        }}
-      />
-      <Bricks
-        style={{
-          top: 25,
-          right: 110,
-          left: 110,
-          bottom: "calc(100% - 40px)",
-        }}
-      />
-      <Bricks
-        style={{
-          top: 40,
-          right: 95,
-          left: 95,
-          bottom: "calc(100% - 55px)",
-        }}
-      />
-      <Bricks
-        style={{
-          top: 55,
-          right: 78,
-          left: 78,
-          bottom: "calc(100% - 70px)",
-        }}
-      />
-      <Bricks
-        style={{
-          top: 70,
-          right: 40,
-          left: 40,
-          bottom: "calc(100% - 100px)",
-        }}
-      />
-      <Bricks
-        style={{
-          top: 85,
-          right: 18,
-          left: 18,
-          bottom: "calc(100% - 130px)",
-        }}
-      />
-      <Bricks
-        style={{
-          top: 100,
-          right: 0,
-          left: 0,
-          bottom: 0,
-        }}
-      />
-    </>
-  );
-};
+    <RoofRight />
+    <RoofLeft />
+    <Bricks
+      style={{
+        top: 10,
+        right: 132,
+        left: 132,
+        bottom: 'calc(100% - 25px)',
+      }}
+    />
+    <Bricks
+      style={{
+        top: 25,
+        right: 110,
+        left: 110,
+        bottom: 'calc(100% - 40px)',
+      }}
+    />
+    <Bricks
+      style={{
+        top: 40,
+        right: 95,
+        left: 95,
+        bottom: 'calc(100% - 55px)',
+      }}
+    />
+    <Bricks
+      style={{
+        top: 55,
+        right: 78,
+        left: 78,
+        bottom: 'calc(100% - 70px)',
+      }}
+    />
+    <Bricks
+      style={{
+        top: 70,
+        right: 40,
+        left: 40,
+        bottom: 'calc(100% - 100px)',
+      }}
+    />
+    <Bricks
+      style={{
+        top: 85,
+        right: 18,
+        left: 18,
+        bottom: 'calc(100% - 130px)',
+      }}
+    />
+    <Bricks
+      style={{
+        top: 100,
+        right: 0,
+        left: 0,
+        bottom: 0,
+      }}
+    />
+  </>
+);
 
 export default House;

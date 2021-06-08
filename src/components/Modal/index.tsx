@@ -1,9 +1,9 @@
-import React, { ReactNode, useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import React, { ReactNode, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
-import { Container, ModalBg } from "./styles";
-import useKeyPress from "../../hooks/useKeyPress";
-import CloseButton from "./CloseButton";
+import useKeyPress from '@/hooks/useKeyPress';
+import { Container, ModalBg } from '@/components/Modal/styles';
+import CloseButton from '@/components/Modal/CloseButton';
 
 export interface ChildrenParams {
   CloseButton: typeof CloseButton;
@@ -18,7 +18,7 @@ export interface ModalProps {
   [k: string]: any;
 }
 
-const modalRoot = document.getElementById("modal-root") as Element;
+const modalRoot = document.getElementById('modal-root') as Element;
 
 const Modal = ({
   children,
@@ -27,12 +27,12 @@ const Modal = ({
   onEscapePress,
   ...props
 }: ModalProps) => {
-  const el = document.createElement("div");
+  const el = document.createElement('div');
 
   const [disappear, setDisappear] = useState(false);
   const [toBeVisible, setToBeVisible] = useState(false);
 
-  const escapePressed = useKeyPress(["Escape"]);
+  const escapePressed = useKeyPress(['Escape']);
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
@@ -69,6 +69,7 @@ const Modal = ({
       <ModalBg
         disappear={disappear}
         animationDisabled={disableStartAnimation}
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...props}
       >
         {children({ CloseButton, Container })}

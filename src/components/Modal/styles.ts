@@ -1,6 +1,6 @@
-import styled, { keyframes, css } from "styled-components";
+import styled, { keyframes, css } from 'styled-components';
 
-interface ModalBg {
+interface ModalBgProps {
   disappear: boolean;
   animationDisabled?: boolean;
 }
@@ -16,7 +16,7 @@ const modalAnimation = keyframes`
   }
 `;
 
-export const ModalBg = styled.div<ModalBg>`
+export const ModalBg = styled.div<ModalBgProps>`
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -38,7 +38,7 @@ export const PhoneRotateText = styled.div`
   text-align: center;
 `;
 
-/////// GAME ELEMENTS
+/// //// GAME ELEMENTS
 
 export interface GameContainerProps {
   width: number;

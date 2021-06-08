@@ -37,8 +37,7 @@ const RoofLeft = styled.div`
   top: -5px;
 `;
 
-const Hut = () => {
-  return (
+const Hut = () => (
     <>
       <RoofRight />
       <RoofLeft />
@@ -84,6 +83,5 @@ const Hut = () => {
       />
     </>
   );
-};
 
 export default Hut;

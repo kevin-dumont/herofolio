@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { Warning } from "../Design/Icons/Warning";
-import Modal from "../Modal";
-import { AboutButton, Title, Content } from "./styles";
+import React, { useState } from 'react';
+
+import { Warning } from '@/components/Design/Icons/Warning';
+import Modal from '@/components/Modal';
+import { AboutButton, Title, Content } from '@/components/About/styles';
 
 const About = () => {
   const [showPopin, setShowPopin] = useState(false);
@@ -29,8 +30,8 @@ const About = () => {
               <Title>The technical story of Herofolio</Title>
               <Content>
                 <p>
-                  I'm looking for challenges. So, I wanted to follow some rules
-                  during the conception :
+                  I&apos;m looking for challenges. So, I wanted to follow some
+                  rules during the conception :
                 </p>
                 <ul>
                   <li>
@@ -48,7 +49,7 @@ const About = () => {
                   <li>
                     This website is developed with React and Typescript. No
                     videogame engine like PIXI was used. You can see the
-                    codebase{" "}
+                    codebase{' '}
                     <a
                       href="https://github.com/sygmaa/herofolio"
                       target="_blank"

@@ -1,29 +1,28 @@
-import React, { useState, useEffect, useCallback } from "react";
-import GameEngine, { MoveParms } from "../../components/GameEngine";
-import { CoinType } from "../../definitions/entities";
+import React, { useState, useEffect, useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 
+import { CoinType } from '@/definitions/entities';
 import {
   COINS,
   GRID_ELEMENT_WIDTH,
   GRID_SIZES_LARGE,
   GRID_SIZES_SMALL,
-} from "../../constants/constants";
-import useMedia from "../../hooks/useMedia";
-import { useHistory } from "react-router-dom";
-import { Hero } from "../../components/Design/Hero";
-import { Ground } from "../../components/Design/Ground";
-
-import Modal from "../../components/Modal";
-import { ModalRight, CommandsHelper, PreloadingMask } from "./styles";
-import { Sun } from "../../components/Design/Sun";
-import Clouds from "../../components/Design/Clouds";
-import { Mountains } from "../../components/Design/Moutains";
-import { Forest } from "../../components/Design/Forest";
-import { Tree, Bamboos } from "../../components/Design/Vegetation";
-import House from "../../components/Design/House";
-import Case from "../../components/Design/Case";
-import Coin from "../../components/Design/Coin";
-import { MainTitle } from "../../components/Design/MainTitle";
+} from '@/constants/constants';
+import useMedia from '@/hooks/useMedia';
+import GameEngine, { MoveParms } from '@/components/GameEngine';
+import { Hero } from '@/components/Design/Hero';
+import { Ground } from '@/components/Design/Ground';
+import Modal from '@/components/Modal';
+import { Sun } from '@/components/Design/Sun';
+import Clouds from '@/components/Design/Clouds';
+import { Mountains } from '@/components/Design/Moutains';
+import { Forest } from '@/components/Design/Forest';
+import { Tree, Bamboos } from '@/components/Design/Vegetation';
+import House from '@/components/Design/House';
+import Case from '@/components/Design/Case';
+import Coin from '@/components/Design/Coin';
+import { MainTitle } from '@/components/Design/MainTitle';
+import { useAppDispatch, useAppSelector } from '@/hooks/useAppStore';
 import {
   addJump,
   move,
@@ -32,8 +31,12 @@ import {
   selectHeroPositions,
   selectHasMove,
   selectNbJump,
-} from "../../store/game";
-import { useAppDispatch, useAppSelector } from "../../hooks/useAppStore";
+} from '@/store/game';
+import {
+  ModalRight,
+  CommandsHelper,
+  PreloadingMask,
+} from '@/containers/Profile/styles';
 
 // constants
 export const HOUSE_LEFT = 40;
@@ -96,7 +99,7 @@ const Profile = () => {
   const onTop = (p: number) => {
     if (p === HOUSE_LEFT + 2) {
       setTimeout(() => {
-        history.push("/skills");
+        history.push('/skills');
       }, 200);
     }
   };
@@ -119,11 +122,11 @@ const Profile = () => {
   );
 
   const onMove = ({ position }: MoveParms) => {
-    dispatch(move({ location: "profile", position }));
+    dispatch(move({ location: 'profile', position }));
 
     coins.forEach((coin, i) => {
       if (
-        coin.location === "profile" &&
+        coin.location === 'profile' &&
         position === coin.position &&
         !isCoinTaken(coin)
       ) {
@@ -194,8 +197,8 @@ const Profile = () => {
             height={height}
             background={
               !preloading && positionInTheGrid < LANDSCAPE_CHANGE
-                ? "#79d4ff"
-                : "#ffcde2"
+                ? '#79d4ff'
+                : '#ffcde2'
             }
           >
             {/* Hero */}
@@ -275,7 +278,7 @@ const Profile = () => {
               >
                 {COINS.map(
                   (coin) =>
-                    coin.location === "profile" && (
+                    coin.location === 'profile' && (
                       <Coin
                         key={coin.location + coin.position}
                         width={getX(1)}
@@ -289,7 +292,7 @@ const Profile = () => {
                 {/* Fix : coin triggered at the begining to preload end animation */}
                 {preloading && (
                   <Coin
-                    taken={true}
+                    taken
                     width={getX(1)}
                     height={getY(3)}
                     left={getX(-1)}
@@ -334,10 +337,10 @@ const Profile = () => {
                 height={getY(GROUND_HEIGHT)}
                 width={getX(GRID_WIDTH)}
               >
-                <Ground grassColor={"#4ba446"} groundColor={"#896443"} />
+                <Ground grassColor="#4ba446" groundColor="#896443" />
                 <Ground
-                  grassColor={"#b1ec54"}
-                  groundColor={"#b8a48c"}
+                  grassColor="#b1ec54"
+                  groundColor="#b8a48c"
                   opacity={
                     !preloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
                   }
@@ -354,10 +357,10 @@ const Profile = () => {
                 height={getY(2)}
                 left={0}
               >
-                <Tree scale={0.5} rotate={1} left={100} pale={true} />
-                <Tree scale={0.6} rotate={0} left={350} pale={true} />
-                <Tree scale={0.6} rotate={0} left={950} pale={true} />
-                <Tree scale={0.5} rotate={2} left={1200} pale={true} />
+                <Tree scale={0.5} rotate={1} left={100} pale />
+                <Tree scale={0.6} rotate={0} left={350} pale />
+                <Tree scale={0.6} rotate={0} left={950} pale />
+                <Tree scale={0.5} rotate={2} left={1200} pale />
                 <Bamboos left={1500} zIndex={-1} scale={0.6} rotate={-1} />
                 <Bamboos left={1520} zIndex={-1} scale={0.6} rotate={1} />
                 <Bamboos left={1800} zIndex={-1} scale={0.3} rotate={-1} />
@@ -365,7 +368,7 @@ const Profile = () => {
                 <Bamboos left={2050} zIndex={-1} scale={0.5} rotate={-1} />
                 <Bamboos left={2070} zIndex={-1} scale={0.5} rotate={0} />
                 <Bamboos left={2300} zIndex={-1} scale={0.4} rotate={0} />
-                <Bamboos left={2320} zIndex={-1} scale={0.4} rotate={2} />{" "}
+                <Bamboos left={2320} zIndex={-1} scale={0.4} rotate={2} />{' '}
               </GameElement>
             </Plan>
 
@@ -378,7 +381,7 @@ const Profile = () => {
               >
                 <Forest />
                 <Forest
-                  color={"#8ebd43"}
+                  color="#8ebd43"
                   opacity={
                     !preloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
                   }
@@ -398,14 +401,14 @@ const Profile = () => {
                   percent={65}
                   moutainWidth={5}
                   mountainHeight={15}
-                  background={"#6bbce2"}
+                  background="#6bbce2"
                 />
                 <Mountains
                   angle={165}
                   percent={65}
                   moutainWidth={5}
                   mountainHeight={15}
-                  background={"#9e8791"}
+                  background="#9e8791"
                   opacity={
                     !preloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
                   }
@@ -426,7 +429,7 @@ const Profile = () => {
               zIndex={0}
             >
               <Sun
-                color={"#ffffcc"}
+                color="#ffffcc"
                 opacity={
                   !preloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
                 }
@@ -452,16 +455,17 @@ const Profile = () => {
             <Container>
               <ModalRight>
                 <h2>
-                  I'm <strong>Kévin Dumont</strong>, a web artisan
+                  I&apos;m <strong>Kévin Dumont</strong>, a web artisan
                 </h2>
                 <p>
-                  I'm creative. I create websites in their entirety. Design,
-                  development, deployment. So, we can say I'm a full stack
-                  developer. I love challenges. I'm a real passionate. I'm 100%
-                  self-taught, I'm interested by the back-end web development
-                  since I was 14. Today, I prefer the front-end development
-                  because it's more sophisticated. I am still learning new
-                  technologies to stay up to date and improve my knowledge.
+                  I&apos;m creative. I create websites in their entirety.
+                  Design, development, deployment. So, we can say I&apos;m a
+                  full stack developer. I love challenges. I&apos;m a real
+                  passionate. I&apos;m 100% self-taught, I&apos;m interested by
+                  the back-end web development since I was 14. Today, I prefer
+                  the front-end development because it&apos;s more
+                  sophisticated. I am still learning new technologies to stay up
+                  to date and improve my knowledge.
                 </p>
               </ModalRight>
             </Container>

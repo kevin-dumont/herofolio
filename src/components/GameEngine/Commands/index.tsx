@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from "react";
-import styled, { css } from "styled-components";
+import React, { useEffect, useRef } from 'react';
+import styled, { css } from 'styled-components';
 
-import useTouchHold from "../../../hooks/useTouchHold";
+import useTouchHold from '@/hooks/useTouchHold';
 
-export type Direction = "up" | "left" | "right" | "down";
+export type Direction = 'up' | 'left' | 'right' | 'down';
 
 interface ArrowProps {
   direction: Direction;
@@ -21,7 +21,7 @@ export interface CommandsProps {
   onArrowRightChange: (isPressed: boolean) => any;
 }
 
-const COMMANDS_COLOR = "rgba(255, 255, 255, 0.65)";
+const COMMANDS_COLOR = 'rgba(255, 255, 255, 0.65)';
 
 const CommandsWrapper = styled.div`
   position: fixed;
@@ -39,31 +39,31 @@ const ArrowContainer = styled.div<ArrowContainerProps>`
   align-items: center;
   justify-content: center;
   position: absolute;
-  user-select: none; 
+  user-select: none;
 
   ${({ direction }) =>
-    direction === "down" &&
+    direction === 'down' &&
     css`
       left: calc(50% - 25px);
       bottom: 0;
     `}
 
   ${({ direction }) =>
-    direction === "up" &&
+    direction === 'up' &&
     css`
       left: calc(50% - 25px);
       top: 0;
     `}
 
   ${({ direction }) =>
-    direction === "left" &&
+    direction === 'left' &&
     css`
       top: calc(50% - 25px);
       left: 0;
     `}
 
   ${({ direction }) =>
-    direction === "right" &&
+    direction === 'right' &&
     css`
       top: calc(50% - 25px);
       right: 0;
@@ -77,28 +77,28 @@ const Arrow = styled.div<ArrowProps>`
   user-select: none;
 
   ${({ direction }) =>
-    direction === "down" &&
+    direction === 'down' &&
     css`
       border-top-color: ${COMMANDS_COLOR};
       margin-top: 25px;
     `}
 
   ${({ direction }) =>
-    direction === "up" &&
+    direction === 'up' &&
     css`
       border-bottom-color: ${COMMANDS_COLOR};
       margin-bottom: 25px;
     `}
 
   ${({ direction }) =>
-    direction === "left" &&
+    direction === 'left' &&
     css`
       border-right-color: ${COMMANDS_COLOR};
       margin-right: 25px;
     `}
 
   ${({ direction }) =>
-    direction === "right" &&
+    direction === 'right' &&
     css`
       border-left-color: ${COMMANDS_COLOR};
       margin-left: 25px;
@@ -122,7 +122,7 @@ const Commands = ({
   onArrowUpChange,
   onArrowDownChange,
   onArrowLeftChange,
-  onArrowRightChange
+  onArrowRightChange,
 }: CommandsProps) => {
   const spaceRef = useRef<HTMLDivElement>(null);
   const leftRef = useRef<HTMLDivElement>(null);
@@ -146,20 +146,20 @@ const Commands = ({
     <CommandsWrapper>
       <Circle ref={spaceRef} />
 
-      <ArrowContainer ref={leftRef} direction={"left"}>
-        <Arrow direction={"left"} aria-label={"left"} />
+      <ArrowContainer ref={leftRef} direction="left">
+        <Arrow direction="left" aria-label="left" />
       </ArrowContainer>
 
-      <ArrowContainer ref={rightRef} direction={"right"}>
-        <Arrow direction={"right"} aria-label={"right"} />
+      <ArrowContainer ref={rightRef} direction="right">
+        <Arrow direction="right" aria-label="right" />
       </ArrowContainer>
 
-      <ArrowContainer ref={upRef} direction={"up"}>
-        <Arrow direction={"up"} aria-label={"up"} />
+      <ArrowContainer ref={upRef} direction="up">
+        <Arrow direction="up" aria-label="up" />
       </ArrowContainer>
 
-      <ArrowContainer ref={downRef} direction={"down"}>
-        <Arrow direction={"down"} aria-label={"down"} />
+      <ArrowContainer ref={downRef} direction="down">
+        <Arrow direction="down" aria-label="down" />
       </ArrowContainer>
     </CommandsWrapper>
   );

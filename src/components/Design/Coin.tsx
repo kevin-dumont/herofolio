@@ -1,6 +1,7 @@
-import React from "react";
-import styled, { keyframes, css } from "styled-components";
-import { FadeOut } from "./FadeOut";
+import React from 'react';
+import styled, { keyframes, css } from 'styled-components';
+
+import { FadeOut } from '@/components/Design/FadeOut';
 
 interface WrapperProps {
   width: number;
@@ -19,12 +20,12 @@ export interface CoinUiProps {
   taken: boolean;
 }
 
-const size = "40px";
-const fontSize = "28px";
-const width = "4px";
-const color = "#ffd600";
-const speed = "2s";
-const innerCoin = "#ceae0c";
+const SIZE = '40px';
+const FONT_SIZE = '28px';
+const WIDTH = '4px';
+const COLOR = '#ffd600';
+const INNER_COLOR = '#ceae0c';
+const SPEED = '2s';
 
 const rotate = keyframes`
   0% {
@@ -45,11 +46,11 @@ const hideEffect = keyframes`
 `;
 
 const CoinUi = styled.div<CoinUiProps>`
-  font-size: ${fontSize};
+  font-size: ${FONT_SIZE};
   font-weight: bold;
-  width: ${width};
-  height: ${size};
-  background: ${innerCoin};
+  width: ${WIDTH};
+  height: ${SIZE};
+  background: ${INNER_COLOR};
   margin: auto;
   position: absolute;
   left: 0;
@@ -57,7 +58,7 @@ const CoinUi = styled.div<CoinUiProps>`
   bottom: 0;
   transform-style: preserve-3d;
   transform: rotateY(90deg) translate3d(0, -15px, 0);
-  animation: ${rotate} ${speed} infinite linear;
+  animation: ${rotate} ${SPEED} infinite linear;
   pointer-events: none;
 
   ${({ taken }) =>
@@ -69,35 +70,35 @@ const CoinUi = styled.div<CoinUiProps>`
   .side,
   &:before,
   &:after {
-    content: "";
+    content: '';
     position: absolute;
-    width: ${size};
-    height: ${size};
+    width: ${SIZE};
+    height: ${SIZE};
     overflow: hidden;
-    background: ${innerCoin};
+    background: ${INNER_COLOR};
     border-radius: 50%;
-    right: calc(-${size} / 2 + ${width});
+    right: calc(-${SIZE} / 2 + ${WIDTH});
     text-align: center;
-    line-height: calc(${size} - 2px);
-    color: ${color};
+    line-height: calc(${SIZE} - 2px);
+    color: ${COLOR};
     transform: rotateY(-90deg);
     backface-visibility: hidden;
   }
 
   .heads,
   .tails {
-    box-shadow: inset 0 0 0 6px ${color};
+    box-shadow: inset 0 0 0 6px ${COLOR};
   }
 
   .tails,
   &:after {
-    left: calc(-${size} / 2 + ${width});
+    left: calc(-${SIZE} / 2 + ${WIDTH});
     transform: rotateY(90deg);
   }
 
   &:before,
   &:after {
-    background: ${innerCoin};
+    background: ${INNER_COLOR};
     backface-visibility: hidden;
     transform: rotateY(90deg);
   }
@@ -118,17 +119,15 @@ const Wrapper = styled.div<WrapperProps>`
   left: ${(props) => props.left}px;
 `;
 
-const Coin = ({ left, width, height, taken }: CoinProps) => {
-  return (
-    <Wrapper width={width} height={height} left={left}>
-      <FadeOut duration="0.5s" hide={taken}>
-        <CoinUi taken={taken}>
-          <div className="side heads">$</div>
-          <div className="side tails">$</div>
-        </CoinUi>
-      </FadeOut>
-    </Wrapper>
-  );
-};
+const Coin = ({ left, width, height, taken }: CoinProps) => (
+  <Wrapper width={width} height={height} left={left}>
+    <FadeOut duration="0.5s" hide={taken}>
+      <CoinUi taken={taken}>
+        <div className="side heads">$</div>
+        <div className="side tails">$</div>
+      </CoinUi>
+    </FadeOut>
+  </Wrapper>
+);
 
 export default Coin;

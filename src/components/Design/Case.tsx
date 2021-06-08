@@ -1,7 +1,8 @@
-import React, { ReactNode } from "react";
-import styled, { css } from "styled-components";
-import { BrickBg } from "./BrickBg";
-import { FONTS } from "../../constants/constants";
+import React, { ReactNode } from 'react';
+import styled, { css } from 'styled-components';
+
+import { FONTS } from '@/constants/constants';
+import { BrickBg } from '@/components/Design/BrickBg';
 
 interface PositionProps {
   isJumping: boolean;
@@ -54,13 +55,11 @@ export interface CaseProps {
   onClick: () => any;
 }
 
-const Case = ({ children, onClick, isJumping, jumpHeight }: CaseProps) => {
-  return (
-    <Position onClick={onClick} jumpHeight={jumpHeight} isJumping={isJumping}>
-      <Text>{children}</Text>
-      <CaseSquare />
-    </Position>
-  );
-};
+const Case = ({ children, onClick, isJumping, jumpHeight }: CaseProps) => (
+  <Position onClick={onClick} jumpHeight={jumpHeight} isJumping={isJumping}>
+    <Text>{children}</Text>
+    <CaseSquare />
+  </Position>
+);
 
 export default Case;

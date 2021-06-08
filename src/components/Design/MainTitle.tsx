@@ -1,15 +1,16 @@
-import React from "react";
-import styled from "styled-components";
-import { get3dTextShadow } from "../../services/helpers";
-import { MEDIA, FONTS } from "../../constants/constants";
-import { Flower } from "./Vegetation";
+import React from 'react';
+import styled from 'styled-components';
+
+import { MEDIA, FONTS } from '@/constants/constants';
+import { get3dTextShadow } from '@/services/helpers';
+import { Flower } from '@/components/Design/Vegetation';
 
 export const Title = styled.div`
   font-size: 86px;
   font-weight: 800;
   letter-spacing: -5px;
   color: #fd4f5e;
-  text-shadow: ${get3dTextShadow("#ce3744", 15)};
+  text-shadow: ${get3dTextShadow('#ce3744', 15)};
   line-height: 62px;
   text-align: center;
 
@@ -36,7 +37,7 @@ export const Presents = styled.div`
   right: 30px;
   font-size: 20px;
   color: #fff;
-  text-shadow: ${get3dTextShadow("#AAA", 3)};
+  text-shadow: ${get3dTextShadow('#AAA', 3)};
 
   ${MEDIA.MAX_S} {
     height: 144px;
@@ -52,7 +53,7 @@ export const Subtitle = styled.div`
   font-weight: 800;
   letter-spacing: -5px;
   color: #ffd600;
-  text-shadow: ${get3dTextShadow("#ceae0c", 15)};
+  text-shadow: ${get3dTextShadow('#ceae0c', 15)};
   line-height: 62px;
   text-align: center;
 
@@ -82,45 +83,43 @@ export const TitleContainer = styled.h1`
   }
 `;
 
-export const MainTitle = () => {
-  return (
-    <TitleContainer>
-      <Flower
-        zIndex={0}
-        bottom={20}
-        color="#ffffff"
-        rodColor={"#4ca446"}
-        left={-25}
-      />
-      <Flower zIndex={0} bottom={50} color="#fd4f5e" left={30} />
-      <Flower zIndex={-1} bottom={120} color="#ce3744" left={120} />
-      <Flower
-        zIndex={0}
-        bottom={70}
-        color="#ffffff"
-        right={40}
-        rodColor={"#4ca446"}
-      />
-      <Flower
-        zIndex={0}
-        bottom={20}
-        color="#ffffff"
-        rodColor={"#4ca446"}
-        left={-25}
-      />
-      <Flower
-        zIndex={1}
-        bottom={0}
-        color="#ce3744"
-        right={-20}
-        rodColor={"#4ca446"}
-      />
-      <Title>
-        Kevin
-        <span>Dumont</span>
-      </Title>
-      <Presents>presents</Presents>
-      <Subtitle>Herofolio</Subtitle>
-    </TitleContainer>
-  );
-};
+export const MainTitle = () => (
+  <TitleContainer>
+    <Flower
+      zIndex={0}
+      bottom={20}
+      color="#ffffff"
+      rodColor="#4ca446"
+      left={-25}
+    />
+    <Flower zIndex={0} bottom={50} color="#fd4f5e" left={30} />
+    <Flower zIndex={-1} bottom={120} color="#ce3744" left={120} />
+    <Flower
+      zIndex={0}
+      bottom={70}
+      color="#ffffff"
+      right={40}
+      rodColor="#4ca446"
+    />
+    <Flower
+      zIndex={0}
+      bottom={20}
+      color="#ffffff"
+      rodColor="#4ca446"
+      left={-25}
+    />
+    <Flower
+      zIndex={1}
+      bottom={0}
+      color="#ce3744"
+      right={-20}
+      rodColor="#4ca446"
+    />
+    <Title>
+      Kevin
+      <span>Dumont</span>
+    </Title>
+    <Presents>presents</Presents>
+    <Subtitle>Herofolio</Subtitle>
+  </TitleContainer>
+);

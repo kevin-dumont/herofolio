@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { BrickBg } from "./BrickBg";
-import { FONTS } from "../../constants";
+import { FONTS } from "../../constants/constants";
 
 interface PositionProps {
   isJumping: boolean;
@@ -29,7 +29,7 @@ const Position = styled.div<PositionProps>`
   ${({ isJumping, jumpHeight }) =>
     isJumping &&
     css`
-      transform: translateY(-${jumpHeight}px);
+      transform: translate3d(0, -${jumpHeight}px, 0);
     `}
 `;
 

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { get3dTextShadow } from "../../services/helpers";
-import { MEDIA, FONTS } from "../../constants";
+import { MEDIA, FONTS } from "../../constants/constants";
 import { Flower } from "./Vegetation";
 
 export const Title = styled.div`

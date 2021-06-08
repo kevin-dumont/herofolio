@@ -63,7 +63,7 @@ export interface PlanProps {
 
 export const Plan = styled.div.attrs(({ left }: PlanProps) => ({
   style: {
-    transform: `translateX(${left}px)`,
+    transform: `translate3d(${left}px, 0, 0)`,
   },
 }))<PlanProps>`
   position: absolute;
@@ -90,7 +90,7 @@ export interface GameElementProps {
 
 export const GameElement = styled.div.attrs(({ left }: GameElementProps) => ({
   style: {
-    transform: `translateX(calc(${left}px))`,
+    transform: `translate3d(calc(${left}px), 0, 0)`,
   },
 }))<GameElementProps>`
   transition: transform 0.2s linear 0s;

@@ -64,19 +64,19 @@ export interface HeroProps {
 
 const appearHero = keyframes`
   0% {
-    transform: translateY(-100vh);
+    transform: translate3d(0, -100vh, 0);
   }
   100% {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 `;
 
 const appearHeroMobile = keyframes`
   0% {
-    transform: scale(0.8) translateY(-100vh);
+    transform: scale(0.8) translate3d(0, -100vh, 0);
   }
   100% {
-    transform: scale(0.8) translateY(0);
+    transform: scale(0.8) translate3d(0, 0, 0);
   }
 `;
 
@@ -89,10 +89,10 @@ export const Hero = styled.div<HeroProps>`
   background: ${hat}, ${head}, ${body};
   transform-origin: bottom;
   transition: all 0.25s ease-in-out;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
 
   @media screen and (max-height: 600px) {
-    transform: scale(0.8) translateY(0);
+    transform: scale(0.8) translate3d(0, 0, 0);
   }
 
   ${({ show }) =>
@@ -108,10 +108,10 @@ export const Hero = styled.div<HeroProps>`
   ${({ isJumping, jumpHeight }) =>
     isJumping &&
     css`
-      transform: translateY(${-jumpHeight}px);
+      transform: translate3d(0, ${-jumpHeight}px, 0);
 
       @media screen and (max-height: 600px) {
-        transform: scale(0.8) translateY(${-jumpHeight}px);
+        transform: scale(0.8) translate3d(0, ${-jumpHeight}px, 0);
       }
     `}
 

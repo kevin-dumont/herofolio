@@ -28,19 +28,19 @@ const innerCoin = "#ceae0c";
 
 const rotate = keyframes`
   0% {
-    transform: rotateY(90deg) translateY(-10px);
+    transform: rotateY(90deg) translate3d(0, -10px, 0);
   }
   50% {
-    transform: rotateY(270deg) translateY(-20px);
+    transform: rotateY(270deg) translate3d(0, -20px, 0);
   }
   100% {
-    transform: rotateY(450deg) translateY(-10px);
+    transform: rotateY(450deg) translate3d(0, -10px, 0);
   }
 `;
 
 const hideEffect = keyframes`
   100% {
-    transform: rotateY(1080deg) translateY(-200px);
+    transform: rotateY(1080deg) translate3d(0, -200px, 0);
   }
 `;
 
@@ -56,7 +56,7 @@ const CoinUi = styled.div<CoinUiProps>`
   right: 0;
   bottom: 0;
   transform-style: preserve-3d;
-  transform: rotateY(90deg) translateY(-15px);
+  transform: rotateY(90deg) translate3d(0, -15px, 0);
   animation: ${rotate} ${speed} infinite linear;
   pointer-events: none;
 

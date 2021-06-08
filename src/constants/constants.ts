@@ -1,4 +1,4 @@
-import { Coin } from "./contexts/GameContext";
+import { CoinType } from "../definitions/entities";
 
 export const MEDIA = {
   // MIN
@@ -37,20 +37,17 @@ export const FONTS = {
   MONO: "'PT Mono', monospace",
 };
 
-export const COINS: Coin[] = [
+export const COINS: CoinType[] = [
   {
     location: "profile",
     position: 25,
-    taken: false,
   },
   {
     location: "profile",
     position: 28,
-    taken: false,
   },
   {
     location: "profile",
     position: 31,
-    taken: false,
   },
 ];

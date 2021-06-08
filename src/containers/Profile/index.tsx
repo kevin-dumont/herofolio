@@ -1,13 +1,14 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import GameEngine, { MoveParms } from "../../components/GameEngine";
+import { CoinType } from "../../definitions/entities";
 
 import {
+  COINS,
   GRID_ELEMENT_WIDTH,
   GRID_SIZES_LARGE,
   GRID_SIZES_SMALL,
-} from "../../constants";
+} from "../../constants/constants";
 import useMedia from "../../hooks/useMedia";
-import GameContext from "../../contexts/GameContext";
 import { useHistory } from "react-router-dom";
 import { Hero } from "../../components/Design/Hero";
 import { Ground } from "../../components/Design/Ground";
@@ -23,6 +24,16 @@ import House from "../../components/Design/House";
 import Case from "../../components/Design/Case";
 import Coin from "../../components/Design/Coin";
 import { MainTitle } from "../../components/Design/MainTitle";
+import {
+  addJump,
+  move,
+  takeCoin,
+  selectCoins,
+  selectHeroPositions,
+  selectHasMove,
+  selectNbJump,
+} from "../../store/game";
+import { useAppDispatch, useAppSelector } from "../../hooks/useAppStore";
 
 // constants
 export const HOUSE_LEFT = 40;
@@ -61,15 +72,12 @@ const Profile = () => {
   );
 
   const history = useHistory();
-  const {
-    coins,
-    takeCoins,
-    heroPositions: { profile: initPosition },
-    move,
-    nbJump,
-    hasMove,
-    incrementJump,
-  } = useContext(GameContext);
+  const dispatch = useAppDispatch();
+
+  const coins = useAppSelector(selectCoins);
+  const heroPositions = useAppSelector(selectHeroPositions);
+  const hasMove = useAppSelector(selectHasMove);
+  const nbJump = useAppSelector(selectNbJump);
 
   const [showPopin, setShowPopin] = useState(false);
   const [isActive, setIsActive] = useState(true);
@@ -94,25 +102,32 @@ const Profile = () => {
   };
 
   const onJump = (p: number) => {
-    incrementJump();
+    dispatch(addJump());
 
     if (p === PROFILE_LEFT) {
-      setTimeout(() => {
-        openModal();
-      }, 500);
+      setTimeout(() => openModal(), 500);
     }
   };
 
+  const isCoinTaken = useCallback(
+    (coin: CoinType) =>
+      !!coins.find(
+        ({ location, position }) =>
+          coin.location === location && coin.position === position
+      ),
+    [coins]
+  );
+
   const onMove = ({ position }: MoveParms) => {
-    move("profile", position);
+    dispatch(move({ location: "profile", position }));
 
     coins.forEach((coin, i) => {
       if (
         coin.location === "profile" &&
         position === coin.position &&
-        !coin.taken
+        !isCoinTaken(coin)
       ) {
-        takeCoins(i);
+        dispatch(takeCoin(COINS[i]));
       }
     });
   };
@@ -120,7 +135,7 @@ const Profile = () => {
   const preload = () => {
     setPreloading(false);
 
-    const timeouts: number[] = [
+    const timeouts: NodeJS.Timeout[] = [
       setTimeout(() => setPreloading(true), 500),
       setTimeout(() => setPreloading(false), 1000),
     ];
@@ -144,7 +159,7 @@ const Profile = () => {
 
       <GameEngine
         isActive={isActive}
-        initPosition={initPosition}
+        initPosition={heroPositions.profile}
         onJump={onJump}
         onTop={onTop}
         onMove={onMove}
@@ -258,14 +273,14 @@ const Profile = () => {
                 height={getX(3)}
                 zIndex={11}
               >
-                {coins.map(
+                {COINS.map(
                   (coin) =>
                     coin.location === "profile" && (
                       <Coin
-                        key={`${coin.location + coin.position}`}
+                        key={coin.location + coin.position}
                         width={getX(1)}
                         height={getY(3)}
-                        taken={coin.taken}
+                        taken={isCoinTaken(coin)}
                         left={getX(coin.position)}
                       />
                     )

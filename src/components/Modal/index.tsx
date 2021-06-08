@@ -35,7 +35,7 @@ const Modal = ({
   const escapePressed = useKeyPress(["Escape"]);
 
   useEffect(() => {
-    let timeout: number;
+    let timeout: ReturnType<typeof setTimeout>;
 
     if (show === true) {
       setToBeVisible(true);
@@ -46,9 +46,7 @@ const Modal = ({
     }
 
     return () => {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
+      if (timeout) clearTimeout(timeout);
     };
   }, [show]);
 

@@ -5,24 +5,24 @@ export interface CommonProps {
   right?: number;
 }
 
-export interface TreeProps extends CommonProps {
+export type TreeProps = CommonProps & {
   scale?: number;
   rotate?: number;
   pale?: boolean;
-}
+};
 
-export interface BamboosProps extends CommonProps {
+export type BamboosProps = CommonProps & {
   rotate?: number;
   scale?: number;
   zIndex?: number;
-}
+};
 
-export interface FlowerProps extends CommonProps {
+export type FlowerProps = CommonProps & {
   zIndex?: number;
   bottom?: number;
   color: string;
   rodColor?: string;
-}
+};
 
 const trunk = "#674120";
 const green = "#3f7d3b";

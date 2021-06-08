@@ -1,5 +1,5 @@
 import { createGlobalStyle } from "styled-components";
-import { FONTS } from "../../constants";
+import { FONTS } from "../../constants/constants";
 
 export default createGlobalStyle`
   html {

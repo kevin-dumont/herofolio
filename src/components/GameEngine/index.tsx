@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ReactNode } from "react";
+import React, { useEffect, useState, ReactNode, useRef } from "react";
 
 import useKeyPress from "../../hooks/useKeyPress";
 import useInterval from "use-interval";
@@ -15,6 +15,7 @@ import {
   GameElement,
 } from "./styles";
 import { Loader } from "../Design/Loader";
+import { add } from "../../services/functions";
 
 export interface ChildrenParams {
   heroLeft: number;
@@ -129,20 +130,21 @@ const GameEngine = ({
   const [isJumping, setIsJumping] = useState(false);
   const [isWalking, setIsWalking] = useState(false);
   const [canJump, setCanJump] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [touchSpace, setTouchSpace] = useState(false);
   const [touchTop, setTouchTop] = useState(false);
   const [touchLeft, setTouchLeft] = useState(false);
   const [touchRight, setTouchRight] = useState(false);
   const [touchBottom, setTouchBottom] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loaderTimeout, setLoaderTimeout] = useState<any>(null);
 
   const top = useKeyPress(["ArrowUp", "z"]);
   const left = useKeyPress(["ArrowLeft", "q"]);
   const right = useKeyPress(["ArrowRight", "d"]);
   const bottom = useKeyPress(["ArrowDown", "s"]);
   const space = useKeyPress([" "]);
+
+  const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const positionInTheGrid = heroLeft + -firstPlanLeft;
   const canGoToRight =
@@ -155,13 +157,9 @@ const GameEngine = ({
    * Handle the right move
    */
   const rightHandler = () => {
-    if ((!right && !touchRight) || left) {
-      return;
-    }
+    if ((!right && !touchRight) || left) return;
 
-    if (onMove) {
-      onMove({ direction: "right", position: positionInTheGrid + 1 });
-    }
+    if (onMove) onMove({ direction: "right", position: positionInTheGrid + 1 });
 
     if (heroLeft >= centerPosition) {
       if (canGoToRight) {
@@ -206,8 +204,9 @@ const GameEngine = ({
     if (canJump && isActive) {
       setIsJumping(true);
       setCanJump(false);
-      setTimeout(() => setIsJumping(false), 300);
-      setTimeout(() => setCanJump(true), 400);
+
+      timeouts?.current?.push(setTimeout(() => setIsJumping(false), 300));
+      timeouts?.current?.push(setTimeout(() => setCanJump(true), 400));
 
       if (onJump && isActive) {
         onJump(positionInTheGrid);
@@ -248,15 +247,12 @@ const GameEngine = ({
     setFirstPlanLeft(newFirstPlanLeft);
     setIsLoading(true);
 
-    if (loaderTimeout) {
-      clearTimeout(loaderTimeout);
-    }
+    timeouts?.current.forEach(clearTimeout);
+    timeouts.current = [];
 
-    setLoaderTimeout(setTimeout(() => setIsLoading(false), 1700));
+    timeouts?.current.push(setTimeout(() => setIsLoading(false), 1700));
 
-    if (onResize) {
-      onResize();
-    }
+    if (onResize) onResize();
   };
 
   // Handle moves
@@ -275,12 +271,11 @@ const GameEngine = ({
 
   // Show commands on mobile only
   useEffect(() => {
-    if ("ontouchstart" in document.documentElement) {
-      setIsTouchDevice(true);
-    }
+    if ("ontouchstart" in document.documentElement) setIsTouchDevice(true);
 
     return () => {
-      clearTimeout(loaderTimeout);
+      timeouts?.current.forEach(clearTimeout);
+      timeouts.current = [];
     };
   }, []);
 
@@ -364,7 +359,9 @@ const GameEngine = ({
           onSpaceChange={(v) => {
             if (v) {
               setTouchSpace(true);
-              setTimeout(() => setTouchSpace(false), 300);
+              timeouts?.current.push(
+                setTimeout(() => setTouchSpace(false), 300)
+              );
             }
           }}
           onArrowUpChange={(v) => setTouchTop(v)}

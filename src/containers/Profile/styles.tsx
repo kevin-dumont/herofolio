@@ -1,5 +1,5 @@
 import styled, { keyframes } from "styled-components";
-import { MEDIA, FONTS } from "../../constants";
+import { MEDIA, FONTS } from "../../constants/constants";
 import { get3dTextShadow } from "../../services/helpers";
 
 export const ModalRight = styled.div`

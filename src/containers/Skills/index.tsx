@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Hero } from "../../components/Design/Hero";
 import { useHistory } from "react-router-dom";
 import useMedia from "../../hooks/useMedia";
@@ -6,17 +6,18 @@ import {
   GRID_SIZES_SMALL,
   GRID_SIZES_LARGE,
   GRID_ELEMENT_WIDTH,
-} from "../../constants";
+} from "../../constants/constants";
 import GameEngine, { MoveParms } from "../../components/GameEngine";
-import GameContext from "../../contexts/GameContext";
 import { Ground } from "./styles";
+import { useAppDispatch } from "../../hooks/useAppStore";
+import { move } from "../../store/game";
 
 export const GRID_WIDTH = 70;
 export const DOOR_HEIGHT = 3;
 
 const Skills = () => {
   const history = useHistory();
-  const { move } = useContext(GameContext);
+  const dispatch = useAppDispatch();
 
   const { GROUND_HEIGHT, JUMP, GRID_HEIGHT, HERO_SIZE } = useMedia(
     (_, height) => {
@@ -40,7 +41,7 @@ const Skills = () => {
   };
 
   const onMove = ({ position }: MoveParms) => {
-    move("profile", position);
+    dispatch(move({ location: "skills", position }));
   };
 
   return (

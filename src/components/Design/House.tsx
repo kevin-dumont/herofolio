@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { BrickBg } from "./BrickBg";
 import { Flower } from "./Vegetation";
-import { MEDIA } from "../../constants";
+import { MEDIA } from "../../constants/constants";
 
 const darkRed = "#7d1010";
 
@@ -47,7 +47,7 @@ const Porch = styled.div`
   border-bottom-color: ${darkRed};
 
   ${MEDIA.MAX_S} {
-    transform: scale(0.8) translateY(50px);
+    transform: scale(0.8) translate3d(0, 50px, 0);
     transform-origin: bottom;
   }
 `;

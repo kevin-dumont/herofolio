@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 
-import useTouchHold from '@/hooks/useTouchHold';
+import useTouchHold from '@hooks/useTouchHold';
 
 export type Direction = 'up' | 'left' | 'right' | 'down';
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { MEDIA } from '@/constants/constants';
-import { BrickBg } from '@/components/Design/BrickBg';
-import { Flower } from '@/components/Design/Vegetation';
+import { MEDIA } from '@constants/constants';
+import { BrickBg } from '@components/Design/BrickBg';
+import { Flower } from '@components/Design/Vegetation';
 
 const darkRed = '#7d1010';
 

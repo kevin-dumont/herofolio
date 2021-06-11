@@ -1,28 +1,27 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
 
-import { CoinType } from '@/definitions/entities';
+import { CoinType } from '@definitions/entities';
 import {
-  COINS,
   GRID_ELEMENT_WIDTH,
   GRID_SIZES_LARGE,
   GRID_SIZES_SMALL,
-} from '@/constants/constants';
-import useMedia from '@/hooks/useMedia';
-import GameEngine, { MoveParms } from '@/components/GameEngine';
-import { Hero } from '@/components/Design/Hero';
-import { Ground } from '@/components/Design/Ground';
-import Modal from '@/components/Modal';
-import { Sun } from '@/components/Design/Sun';
-import Clouds from '@/components/Design/Clouds';
-import { Mountains } from '@/components/Design/Moutains';
-import { Forest } from '@/components/Design/Forest';
-import { Tree, Bamboos } from '@/components/Design/Vegetation';
-import House from '@/components/Design/House';
-import Case from '@/components/Design/Case';
-import Coin from '@/components/Design/Coin';
-import { MainTitle } from '@/components/Design/MainTitle';
-import { useAppDispatch, useAppSelector } from '@/hooks/useAppStore';
+} from '@constantsgrid';
+import { COINS } from '@constantscoins';
+import useMedia from '@hooks/useMedia';
+import GameEngine, { MoveParms } from '@components/GameEngine';
+import { Hero } from '@components/Design/Hero';
+import { Ground } from '@components/Design/Ground';
+import Modal from '@components/Modal';
+import { Sun } from '@components/Design/Sun';
+import Clouds from '@components/Design/Clouds';
+import { Mountains } from '@components/Design/Moutains';
+import { Forest } from '@components/Design/Forest';
+import { Tree, Bamboos } from '@components/Design/Vegetation';
+import House from '@components/Design/House';
+import Case from '@components/Design/Case';
+import Coin from '@components/Design/Coin';
+import { MainTitle } from '@components/Design/MainTitle';
+import { useAppDispatch, useAppSelector } from '@hooks/useAppStore';
 import {
   addJump,
   move,
@@ -31,12 +30,12 @@ import {
   selectHeroPositions,
   selectHasMove,
   selectNbJump,
-} from '@/store/game';
+} from '@store/game';
 import {
   ModalRight,
   CommandsHelper,
   PreloadingMask,
-} from '@/containers/Profile/styles';
+} from '@containers/Profile/styles';
 
 // constants
 export const HOUSE_LEFT = 40;
@@ -74,7 +73,7 @@ const Profile = () => {
       : { ...GRID_SIZES_LARGE, ...HEIGHT_OFFSET.LARGE }
   );
 
-  const history = useHistory();
+  // const history = useHistory();
   const dispatch = useAppDispatch();
 
   const coins = useAppSelector(selectCoins);
@@ -99,7 +98,7 @@ const Profile = () => {
   const onTop = (p: number) => {
     if (p === HOUSE_LEFT + 2) {
       setTimeout(() => {
-        history.push('/skills');
+        // history.push('/skills');
       }, 200);
     }
   };
@@ -124,7 +123,7 @@ const Profile = () => {
   const onMove = ({ position }: MoveParms) => {
     dispatch(move({ location: 'profile', position }));
 
-    coins.forEach((coin, i) => {
+    COINS.forEach((coin, i) => {
       if (
         coin.location === 'profile' &&
         position === coin.position &&

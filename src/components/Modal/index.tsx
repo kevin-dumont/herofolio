@@ -1,9 +1,9 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import useKeyPress from '@/hooks/useKeyPress';
-import { Container, ModalBg } from '@/components/Modal/styles';
-import CloseButton from '@/components/Modal/CloseButton';
+import useKeyPress from '@hooks/useKeyPress';
+import { Container, ModalBg } from '@components/Modal/styles';
+import CloseButton from '@components/Modal/CloseButton';
 
 export interface ChildrenParams {
   CloseButton: typeof CloseButton;
@@ -18,8 +18,6 @@ export interface ModalProps {
   [k: string]: any;
 }
 
-const modalRoot = document.getElementById('modal-root') as Element;
-
 const Modal = ({
   children,
   show,
@@ -27,8 +25,6 @@ const Modal = ({
   onEscapePress,
   ...props
 }: ModalProps) => {
-  const el = document.createElement('div');
-
   const [disappear, setDisappear] = useState(false);
   const [toBeVisible, setToBeVisible] = useState(false);
 
@@ -56,13 +52,7 @@ const Modal = ({
     }
   }, [escapePressed]);
 
-  useEffect(() => {
-    modalRoot.appendChild(el);
-
-    return () => {
-      modalRoot.removeChild(el);
-    };
-  }, []);
+  if (typeof document === 'undefined') return null;
 
   return createPortal(
     toBeVisible ? (
@@ -77,7 +67,7 @@ const Modal = ({
     ) : (
       <></>
     ),
-    modalRoot
+    document.body
   );
 };
 

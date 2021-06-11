@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, { keyframes, css } from 'styled-components';
 
-import { FadeOut } from '@/components/Design/FadeOut';
+import { FadeOut } from '@components/Design/FadeOut';
 
 interface WrapperProps {
   width: number;

@@ -1,4 +1,4 @@
-import useSizes from '@/hooks/useSizes';
+import useSizes from '@hooks/useSizes';
 
 type GetSizes<P extends object> = (width: number, height: number) => P;
 

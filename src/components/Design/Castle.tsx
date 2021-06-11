@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { BrickBg } from '@/components/Design/BrickBg';
+import { BrickBg } from '@components/Design/BrickBg';
 
 const Castle = () => (
   <>

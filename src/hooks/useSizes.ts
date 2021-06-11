@@ -1,8 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
+
+const getWitdh = () =>
+  typeof window === 'undefined' ? 320 : window?.innerWidth;
+
+const getHeight = () =>
+  typeof window === 'undefined' ? 320 : window?.innerHeight;
 
 const useSizes = () => {
-  const [height, setHeight] = useState(window?.innerHeight);
-  const [width, setWidth] = useState(window?.innerWidth);
+  const [height, setHeight] = useState(getHeight);
+  const [width, setWidth] = useState(getWitdh);
 
   const onResize = () => {
     setHeight(window?.innerHeight);
@@ -10,24 +16,24 @@ const useSizes = () => {
   };
 
   useEffect(() => {
-    window?.addEventListener("resize", onResize);
+    window?.addEventListener('resize', onResize);
 
-    if ("onorientationchange" in window) {
-      window?.addEventListener("orientationchange", onResize);
+    if ('onorientationchange' in window) {
+      window?.addEventListener('orientationchange', onResize);
     }
 
     return function cleanUp() {
-      window?.removeEventListener("resize", onResize);
+      window?.removeEventListener('resize', onResize);
 
-      if ("onorientationchange" in window) {
-        window?.removeEventListener("orientationchange", onResize);
+      if ('onorientationchange' in window) {
+        window?.removeEventListener('orientationchange', onResize);
       }
     };
   }, []);
 
   return {
     height,
-    width
+    width,
   };
 };
 

@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { CloseProps, Close } from '@/components/Design/Icons/Close';
+import { CloseProps, Close } from '@components/Design/Icons/Close';
 
 const Button = styled.button`
   background: none;

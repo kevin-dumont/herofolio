@@ -5,12 +5,14 @@
     "plugin:import/typescript",
     "prettier"
   ],
+  "parser": "@typescript-eslint/parser",
   "plugins": ["eslint-plugin-import"],
   "parserOptions": {
     "project": "./tsconfig.json"
   },
-  "ignorePatterns": ["config/**", "scripts/**", "public/**", "*.js"],
+  "ignorePatterns": ["config/**", "scripts/**", "public/**", "*.js", "*.ts"],
   "rules": {
+    "react/prop-types": "off",
     "no-restricted-imports": [
       "error",
       {

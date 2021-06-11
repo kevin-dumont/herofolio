@@ -1,24 +1,45 @@
 {
   "compilerOptions": {
+    "jsx": "preserve",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "outDir": "./dist/",
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "sourceMap": true,
     "target": "es5",
+    "esModuleInterop": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
+    "noEmit": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "downlevelIteration": true,
-    "jsx": "react",
     "baseUrl": "./",
     "paths": {
-      "@/*": [ "./src/*" ],
+      "@components*": ["./src/components/*"],
+      "@constants*": ["./src/constants/*"],
+      "@containers*": ["./src/containers/*"],
+      "@definitions*": ["./src/definitions/*"],
+      "@hooks*": ["./src/hooks/*"],
+      "@pages*": ["./src/pages/*"],
+      "@services*": ["./src/services/*"],
+      "@store*": ["./src/store/*"],
+      "@store": ["./src/store/index.ts"]
     }
   },
-  "include": ["src"]
+  "include": [
+    "./src/components",
+    "./src/constants",
+    "./src/containers",
+    "./src/definitions",
+    "./src/hooks",
+    "./src/pages",
+    "./src/services",
+    "./src/store"
+  ],
+  "exclude": ["node_modules"]
 }

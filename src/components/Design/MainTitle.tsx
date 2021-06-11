@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { MEDIA, FONTS } from '@/constants/constants';
-import { get3dTextShadow } from '@/services/helpers';
-import { Flower } from '@/components/Design/Vegetation';
+import { MEDIA, FONTS } from '@constants/constants';
+import { get3dTextShadow } from '@services/helpers';
+import { Flower } from '@components/Design/Vegetation';
 
 export const Title = styled.div`
   font-size: 86px;

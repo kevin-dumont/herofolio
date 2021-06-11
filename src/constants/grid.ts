@@ -1,0 +1,15 @@
+export const GRID_ELEMENT_WIDTH = 60;
+
+export const GRID_SIZES_SMALL = {
+  GRID_HEIGHT: 5,
+  GROUND_HEIGHT: 1,
+  HERO_SIZE: 1,
+  JUMP: 2,
+};
+
+export const GRID_SIZES_LARGE = {
+  GRID_HEIGHT: 10,
+  GROUND_HEIGHT: 2,
+  HERO_SIZE: 3,
+  JUMP: 3,
+};

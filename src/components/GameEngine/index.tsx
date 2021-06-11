@@ -1,19 +1,19 @@
 import React, { useEffect, useState, ReactNode, useRef } from 'react';
 import useInterval from 'use-interval';
 
-import useKeyPress from '@/hooks/useKeyPress';
-import useSizes from '@/hooks/useSizes';
-import Modal from '@/components/Modal';
-import Flex from '@/components/Flex';
-import { Loader } from '@/components/Design/Loader';
+import useKeyPress from '@hooks/useKeyPress';
+import useSizes from '@hooks/useSizes';
+import Modal from '@components/Modal';
+import Flex from '@components/Flex';
+import { Loader } from '@components/Design/Loader';
 import {
   PhoneRotate,
   PhoneRotateText,
   GameContainer,
   Plan,
   GameElement,
-} from '@/components/GameEngine/styles';
-import Commands from '@/components/GameEngine/Commands';
+} from '@components/GameEngine/styles';
+import Commands from '@components/GameEngine/Commands';
 
 export interface ChildrenParams {
   heroLeft: number;
@@ -155,7 +155,9 @@ const GameEngine = ({
   const rightHandler = () => {
     if ((!right && !touchRight) || left) return;
 
-    if (onMove) onMove({ direction: 'right', position: positionInTheGrid + 1 });
+    if (onMove) {
+      onMove({ direction: 'right', position: positionInTheGrid + 1 });
+    }
 
     if (heroLeft >= centerPosition) {
       if (canGoToRight) {
@@ -172,9 +174,7 @@ const GameEngine = ({
    * Handle the left move
    */
   const leftHandler = () => {
-    if ((!left && !touchLeft) || right) {
-      return;
-    }
+    if ((!left && !touchLeft) || right) return;
 
     if (onMove) {
       onMove({ direction: 'left', position: positionInTheGrid - 1 });

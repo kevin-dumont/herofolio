@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { GameElement as GameElementUI } from '@/components/GameEngine/styles';
-import { Cloud } from '@/components/Design/Cloud';
+import { GameElement as GameElementUI } from '@components/GameEngine/styles';
+import { Cloud } from '@components/Design/Cloud';
 
 export interface CloudsProps {
   GameElement: typeof GameElementUI;

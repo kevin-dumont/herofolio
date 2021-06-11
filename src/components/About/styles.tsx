@@ -1,6 +1,6 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
-import { MEDIA } from "@/constants/constants";
+import { MEDIA } from '@constants/constants';
 
 export const AboutButton = styled.button`
   display: flex;
@@ -77,7 +77,7 @@ export const Content = styled.div`
 
     &:before,
     &:after {
-      content: "";
+      content: '';
       display: block;
       height: 1px;
       width: 10px;

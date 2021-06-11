@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-import { Warning } from '@/components/Design/Icons/Warning';
-import Modal from '@/components/Modal';
-import { AboutButton, Title, Content } from '@/components/About/styles';
+import { Warning } from '@components/Design/Icons/Warning';
+import Modal from '@components/Modal';
+import { AboutButton, Title, Content } from '@components/About/styles';
 
 const About = () => {
   const [showPopin, setShowPopin] = useState(false);

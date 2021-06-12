@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import type { RootState } from '@store';
+import type { RootState } from '@store/index';
 import { CoinType, Location } from '@definitions/entities';
 
 interface GameState {
@@ -26,10 +26,11 @@ const initialState: GameState = {
   nbJump: 0,
   hasMove: false,
   heroPositions: {
-    experiences: 0,
-    hobbies: 0,
-    profile: 0,
-    skills: 0,
+    experiences: 3,
+    hobbies: 3,
+    profile: 3,
+    skills: 3,
+    formation: 3,
   },
   heroLeft: 0,
   firstPlanLeft: 0,

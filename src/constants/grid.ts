@@ -13,3 +13,17 @@ export const GRID_SIZES_LARGE = {
   HERO_SIZE: 3,
   JUMP: 3,
 };
+
+export const FORMATION_GRID_SIZES_SMALL = {
+  GRID_HEIGHT: 8,
+  GROUND_HEIGHT: 2,
+  HERO_SIZE: 1,
+  JUMP: 2,
+};
+
+export const FORMATION_GRID_SIZES_LARGE = {
+  GRID_HEIGHT: 10,
+  GROUND_HEIGHT: 4,
+  HERO_SIZE: 3,
+  JUMP: 3,
+};

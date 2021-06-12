@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
-import { FONTS } from '@constants/constants';
+import { FONTS } from '@constants/theme';
 import { BrickBg } from '@components/Design/BrickBg';
 
 interface PositionProps {

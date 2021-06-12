@@ -1,6 +1,6 @@
 import styled, { keyframes } from 'styled-components';
 
-import { MEDIA, FONTS } from '@constants/constants';
+import { MEDIA, FONTS } from '@constants/theme';
 import { get3dTextShadow } from '@services/helpers';
 
 export const ModalRight = styled.div`

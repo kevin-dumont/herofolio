@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { MEDIA } from '@constants/constants';
+import { MEDIA } from '@constants/theme';
 import { BrickBg } from '@components/Design/BrickBg';
 import { Flower } from '@components/Design/Vegetation';
 
@@ -36,7 +36,7 @@ const RoofLeft = styled.div`
 `;
 
 const Porch = styled.div`
-  z-index: 1;
+  z-index: 2;
   position: absolute;
   right: 0;
   left: 0;
@@ -53,7 +53,7 @@ const Porch = styled.div`
   }
 `;
 
-const Door = styled.div`
+export const Door = styled.div`
   z-index: 1;
   position: absolute;
   right: 0;
@@ -63,7 +63,6 @@ const Door = styled.div`
   width: 130px;
   height: 200px;
   border: 10px solid #d29a20;
-  border-top: none;
   border-bottom: none;
   background: #f7d48c;
 
@@ -93,7 +92,6 @@ const Door = styled.div`
     position: absolute;
     left: 10px;
     border-radius: 4px;
-
     background: #d29a20;
     height: 5px;
     width: 20px;

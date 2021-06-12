@@ -1,4 +1,9 @@
-export type Location = "profile" | "skills" | "experiences" | "hobbies";
+export type Location =
+  | 'profile'
+  | 'skills'
+  | 'experiences'
+  | 'hobbies'
+  | 'formation';
 
 export interface CoinType {
   location: Location;

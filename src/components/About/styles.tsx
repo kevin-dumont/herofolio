@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { MEDIA } from '@constants/constants';
+import { MEDIA } from '@constants/theme';
 
 export const AboutButton = styled.button`
   display: flex;

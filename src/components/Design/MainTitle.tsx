@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { MEDIA, FONTS } from '@constants/constants';
+import { MEDIA, FONTS } from '@constants/theme';
 import { get3dTextShadow } from '@services/helpers';
 import { Flower } from '@components/Design/Vegetation';
 

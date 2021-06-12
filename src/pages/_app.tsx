@@ -2,8 +2,8 @@
 import React, { FC } from 'react';
 import { AppProps } from 'next/app';
 
-import { wrapper } from '@store';
-import GlobalStyles from '@componentsDesign/GlobalStyles';
+import { wrapper } from '@store/index';
+import GlobalStyles from '@components/Design/GlobalStyles';
 
 const SafeHydrate: FC = ({ children }) => (
   <div suppressHydrationWarning>

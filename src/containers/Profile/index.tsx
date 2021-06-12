@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/router';
 
 import { CoinType } from '@definitions/entities';
 import {
   GRID_ELEMENT_WIDTH,
   GRID_SIZES_LARGE,
   GRID_SIZES_SMALL,
-} from '@constantsgrid';
-import { COINS } from '@constantscoins';
+} from '@constants/grid';
+import { COINS } from '@constants/coins';
 import useMedia from '@hooks/useMedia';
 import GameEngine, { MoveParms } from '@components/GameEngine';
 import { Hero } from '@components/Design/Hero';
@@ -73,7 +74,7 @@ const Profile = () => {
       : { ...GRID_SIZES_LARGE, ...HEIGHT_OFFSET.LARGE }
   );
 
-  // const history = useHistory();
+  const router = useRouter();
   const dispatch = useAppDispatch();
 
   const coins = useAppSelector(selectCoins);
@@ -98,7 +99,8 @@ const Profile = () => {
   const onTop = (p: number) => {
     if (p === HOUSE_LEFT + 2) {
       setTimeout(() => {
-        // history.push('/skills');
+        dispatch(move({ location: 'formation', position: 2 }));
+        router.push('/formation');
       }, 200);
     }
   };

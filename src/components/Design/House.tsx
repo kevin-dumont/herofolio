@@ -65,6 +65,7 @@ export const Door = styled.div`
   border: 10px solid #d29a20;
   border-bottom: none;
   background: #f7d48c;
+  border-radius: 5px 5px 0 0;
 
   ${MEDIA.MAX_S} {
     transform: scale(0.8);
@@ -74,7 +75,15 @@ export const Door = styled.div`
   &:before {
     width: 40px;
     height: 40px;
-    background: #79d4ff;
+    background-image: linear-gradient(
+      140deg,
+      #79d4ff 22%,
+      #9cdcfa 22.1%,
+      #79d4ff 54%,
+      #79d4ff 55%,
+      #9cdcfa 55.1%,
+      #79d4ff 80%
+    );
     border: 5px solid #d29b20;
     position: absolute;
     top: 30px;
@@ -83,6 +92,8 @@ export const Door = styled.div`
     left: 0;
     right: 0;
     margin: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   }
 
   &:after {
@@ -93,6 +104,7 @@ export const Door = styled.div`
     left: 10px;
     border-radius: 4px;
     background: #d29a20;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
     height: 5px;
     width: 20px;
   }

@@ -14,6 +14,7 @@ import {
   GameElement,
 } from '@components/GameEngine/styles';
 import Commands from '@components/GameEngine/Commands';
+import About from '@components/About';
 
 export interface ChildrenParams {
   heroLeft: number;
@@ -295,6 +296,7 @@ const GameEngine = ({
 
   return (
     <>
+      <About />
       <Modal disableStartAnimation show={isLoading}>
         {({ Container }) => (
           <Container>

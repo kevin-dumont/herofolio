@@ -1,4 +1,4 @@
-import styled, { keyframes, css } from "styled-components";
+import styled, { keyframes, css } from 'styled-components';
 
 const phoneAnimation = keyframes`
 0% {
@@ -103,46 +103,34 @@ export const GameElement = styled.div.attrs(({ left }: GameElementProps) => ({
 
   ${({ width, height, top, bottom, transition, zIndex }) =>
     css`
-      ${
-        width !== undefined &&
-        css`
-          width: ${width}px;
-        `
-      }
+      ${width !== undefined &&
+      css`
+        width: ${width}px;
+      `}
 
-      ${
-        height !== undefined &&
-        css`
-          height: ${height}px;
-        `
-      }
+      ${height !== undefined &&
+      css`
+        height: ${height}px;
+      `}
 
-      ${
-        top !== undefined &&
-        css`
-          top: ${top}px;
-        `
-      }
+      ${top !== undefined &&
+      css`
+        top: ${top}px;
+      `}
 
-      ${
-        bottom !== undefined &&
-        css`
-          bottom: ${bottom}px;
-        `
-      }
+      ${bottom !== undefined &&
+      css`
+        bottom: ${bottom}px;
+      `}
 
-      ${
-        transition &&
-        css`
-          transition: ${transition};
-        `
-      }
+      ${transition &&
+      css`
+        transition: ${transition};
+      `}
 
-      ${
-        zIndex &&
-        css`
-          z-index: ${zIndex};
-        `
-      }
+      ${zIndex &&
+      css`
+        z-index: ${zIndex};
+      `}
     `}
 `;

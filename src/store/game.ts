@@ -27,10 +27,10 @@ const initialState: GameState = {
   hasMove: false,
   heroPositions: {
     experiences: 3,
-    hobbies: 3,
+    hobbies: 2,
     profile: 3,
-    skills: 3,
-    formation: 3,
+    skills: 2,
+    formation: 2,
   },
   heroLeft: 0,
   firstPlanLeft: 0,

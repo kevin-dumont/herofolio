@@ -1,8 +1,8 @@
 import useSizes from '@hooks/useSizes';
 
-type GetSizes<P extends object> = (width: number, height: number) => P;
+type GetSizes<P extends unknown> = (width: number, height: number) => P;
 
-const useMedia = <P extends object = {}>(getSizes: GetSizes<P>): P => {
+const useMedia = <P extends unknown = {}>(getSizes: GetSizes<P>): P => {
   const { width, height } = useSizes();
 
   return getSizes(width, height);

@@ -154,6 +154,7 @@ const GameEngine = ({
    * Handle the right move
    */
   const rightHandler = () => {
+    if (isLoading) return;
     if ((!right && !touchRight) || left) return;
 
     if (onMove) {
@@ -175,6 +176,7 @@ const GameEngine = ({
    * Handle the left move
    */
   const leftHandler = () => {
+    if (isLoading) return;
     if ((!left && !touchLeft) || right) return;
 
     if (onMove) {
@@ -196,6 +198,8 @@ const GameEngine = ({
    * Fired when the hero is jumping
    */
   const onJumping = () => {
+    if (isLoading) return;
+
     if (canJump && isActive) {
       setIsJumping(true);
       setCanJump(false);
@@ -213,6 +217,8 @@ const GameEngine = ({
    * Fired when the hero is walking
    */
   const handleHeroWalking = () => {
+    if (isLoading) return;
+
     if (
       isActive &&
       ((touchLeft && heroLeft > 1) ||
@@ -276,6 +282,8 @@ const GameEngine = ({
 
   // Call onTop callback
   useEffect(() => {
+    if (isLoading) return;
+
     if ((top || touchTop) && isActive && onTop) {
       onTop(positionInTheGrid);
     }
@@ -283,6 +291,8 @@ const GameEngine = ({
 
   // Trigger the jump
   useEffect(() => {
+    if (isLoading) return;
+
     if (space || touchSpace) onJumping();
   }, [space, touchSpace]);
 

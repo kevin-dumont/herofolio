@@ -6,14 +6,7 @@ export default class MyDocument extends Document {
     return (
       <Html lang="fr">
         <Head>
-          <title>
-            Herofolio - Le portfolio de Kevin Dumont, développeur React
-          </title>
           <meta charSet="utf-8" />
-          <meta
-            name="description"
-            content="Découvrez le portfolio de Kévin Dumont, développeur React passionné sur la région de Paris"
-          />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link
             href="https://fonts.googleapis.com/css2?family=League+Script&family=PT+Mono&family=Source+Sans+Pro:wght@400;900&display=swap"

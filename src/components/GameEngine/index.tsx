@@ -204,8 +204,10 @@ const GameEngine = ({
       setIsJumping(true);
       setCanJump(false);
 
-      timeouts?.current?.push(setTimeout(() => setIsJumping(false), 300));
-      timeouts?.current?.push(setTimeout(() => setCanJump(true), 400));
+      if (timeouts?.current) {
+        timeouts.current.push(setTimeout(() => setIsJumping(false), 300));
+        timeouts.current.push(setTimeout(() => setCanJump(true), 400));
+      }
 
       if (onJump && isActive) {
         onJump(positionInTheGrid);
@@ -275,8 +277,10 @@ const GameEngine = ({
     if ('ontouchstart' in document.documentElement) setIsTouchDevice(true);
 
     return () => {
-      timeouts?.current.forEach(clearTimeout);
-      timeouts.current = [];
+      if (timeouts.current) {
+        timeouts.current.forEach(clearTimeout);
+        timeouts.current = [];
+      }
     };
   }, []);
 

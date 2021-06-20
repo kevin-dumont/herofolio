@@ -1,5 +1,6 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 import { CoinType } from '@definitions/entities';
 import {
@@ -46,16 +47,19 @@ const Formation = () => {
 
   const router = useRouter();
   const dispatch = useAppDispatch();
-
   const coins = useAppSelector(selectCoins);
   const heroPositions = useAppSelector(selectHeroPositions);
 
+  const timeouts = useRef<NodeJS.Timeout[]>([]);
+
   const onTop = (p: number) => {
     if (p === 2) {
-      setTimeout(() => {
-        dispatch(move({ location: 'profile', position: HOUSE_LEFT + 2 }));
-        router.push('/profile');
-      }, 200);
+      timeouts?.current.push(
+        setTimeout(() => {
+          dispatch(move({ location: 'profile', position: HOUSE_LEFT + 2 }));
+          router.push('/');
+        }, 200)
+      );
     }
   };
 
@@ -82,8 +86,28 @@ const Formation = () => {
     });
   };
 
+  useEffect(
+    () => () => {
+      if (timeouts.current) {
+        timeouts.current.forEach(clearTimeout);
+        timeouts.current = [];
+      }
+    },
+    []
+  );
+
   return (
     <>
+      <Head>
+        <title>
+          Herofolio - Le portfolio de Kevin Dumont, développeur React passionné
+          depuis plus de 10 ans sur Paris
+        </title>
+        <meta
+          name="description"
+          content="Découvrez le portfolio de Kévin Dumont, développeur React passionné depuis plus de 10 ans sur la région de Paris"
+        />
+      </Head>
       <GameEngine
         isActive
         initPosition={heroPositions.formation}
@@ -231,7 +255,7 @@ const Formation = () => {
               )}
             </Plan>
 
-            <Plan zIndex={5} left={getX(firstPlanLeft)} data-testid="plan1">
+            <Plan zIndex={5} left={getX(firstPlanLeft)} data-testid="plan2">
               {/* Door */}
               <GameElement
                 id="door"

@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 import { CoinType } from '@definitions/entities';
 import {
@@ -37,21 +38,25 @@ import {
   CommandsHelper,
   PreloadingMask,
 } from '@containers/Profile/styles';
+import { Factory } from '@components/Design/Factory';
 
 // constants
 export const HOUSE_LEFT = 40;
-export const GRID_WIDTH = 90;
+export const FACTORY_LEFT = 80;
+export const GRID_WIDTH = 110;
 export const PROFILE_LEFT = 30;
 export const LANDSCAPE_CHANGE = 45;
 export const HEIGHT_OFFSET = {
   SMALL: {
     HOUSE_HEIGHT: 5,
+    FACTORY_HEIGHT: 4,
     SUN_BOTTOM: 2,
     SUN_LEFT: 1,
     PROFILE_BOTTOM: 3,
   },
   LARGE: {
     HOUSE_HEIGHT: 5,
+    FACTORY_HEIGHT: 6,
     SUN_BOTTOM: 3,
     SUN_LEFT: 4,
     PROFILE_BOTTOM: 5,
@@ -65,6 +70,7 @@ const Profile = () => {
     HERO_SIZE,
     JUMP,
     HOUSE_HEIGHT,
+    FACTORY_HEIGHT,
     SUN_BOTTOM,
     SUN_LEFT,
     PROFILE_BOTTOM,
@@ -86,6 +92,8 @@ const Profile = () => {
   const [isActive, setIsActive] = useState(true);
   const [preloading, setPreloading] = useState(true);
 
+  const timeouts = useRef<NodeJS.Timeout[]>([]);
+
   const closeModal = () => {
     setShowPopin(false);
     setIsActive(true);
@@ -98,10 +106,12 @@ const Profile = () => {
 
   const onTop = (p: number) => {
     if (p === HOUSE_LEFT + 2) {
-      setTimeout(() => {
-        dispatch(move({ location: 'formation', position: 2 }));
-        router.push('/formation');
-      }, 200);
+      timeouts?.current.push(
+        setTimeout(() => {
+          dispatch(move({ location: 'formation', position: 2 }));
+          router.push('/formation');
+        }, 200)
+      );
     }
   };
 
@@ -109,7 +119,7 @@ const Profile = () => {
     dispatch(addJump());
 
     if (p === PROFILE_LEFT) {
-      setTimeout(() => openModal(), 500);
+      timeouts?.current.push(setTimeout(() => openModal(), 500));
     }
   };
 
@@ -137,28 +147,36 @@ const Profile = () => {
   };
 
   const preload = () => {
-    setPreloading(false);
-
-    const timeouts: NodeJS.Timeout[] = [
-      setTimeout(() => setPreloading(true), 500),
-      setTimeout(() => setPreloading(false), 1000),
-    ];
-
-    return () => {
-      timeouts.forEach((t) => clearTimeout(t));
-    };
+    if (timeouts?.current) {
+      timeouts.current.push(setTimeout(() => setPreloading(true), 500));
+      timeouts.current.push(setTimeout(() => setPreloading(false), 1000));
+    }
   };
 
   useEffect(() => {
-    const clearPreload = preload();
+    preload();
 
     return () => {
-      clearPreload();
+      if (timeouts?.current) {
+        timeouts.current.forEach(clearTimeout);
+        timeouts.current = [];
+      }
     };
   }, []);
 
   return (
     <>
+      <Head>
+        <title>
+          Herofolio - Le portfolio de Kevin Dumont, développeur React passionné
+          depuis plus de 10 ans sur Paris
+        </title>
+        <meta
+          name="description"
+          content="Découvrez le portfolio de Kévin Dumont, développeur React passionné depuis plus de 10 ans sur la région de Paris"
+        />
+      </Head>
+
       {preloading && <PreloadingMask />}
 
       <GameEngine
@@ -268,7 +286,6 @@ const Profile = () => {
               </GameElement>
 
               {/* Coins */}
-
               <GameElement
                 id="coins"
                 left={getX(0)}
@@ -302,7 +319,6 @@ const Profile = () => {
               </GameElement>
 
               {/* House */}
-
               <GameElement
                 data-testid="house"
                 zIndex={6}
@@ -313,6 +329,18 @@ const Profile = () => {
               >
                 <House />
                 <Bamboos right={-30} zIndex={-1} scale={0.8} rotate={2} />
+              </GameElement>
+
+              {/* Building */}
+              <GameElement
+                data-testid="factory"
+                zIndex={6}
+                width={getX(14)}
+                left={getX(FACTORY_LEFT)}
+                height={getY(FACTORY_HEIGHT)}
+                bottom={getY(GROUND_HEIGHT)}
+              >
+                <Factory />
               </GameElement>
 
               {/* First plan Trees */}
@@ -329,7 +357,6 @@ const Profile = () => {
               </GameElement>
 
               {/* Ground */}
-
               <GameElement
                 data-testid="ground"
                 zIndex={10}

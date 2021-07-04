@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 
-import { FONTS } from '@constants/theme';
-
 export const Window = styled.div`
   position: absolute;
   display: flex;
@@ -9,36 +7,35 @@ export const Window = styled.div`
   align-content: center;
   width: 100%;
   height: 100%;
-  background-color: #79d4ff;
-  background-image: linear-gradient(
-    140deg,
-    #79d4ff 22%,
-    #9cdcfa 22.1%,
-    #79d4ff 54%,
-    #79d4ff 55%,
-    #9cdcfa 55.1%,
-    #79d4ff 80%
-  );
-  color: #fff;
-  font-family: ${FONTS.MONO};
-  border: 10px solid #e6af39;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
+  background-color: #9775b1;
+  background-image: radial-gradient(
+      50px 80px at 0 0,
+      #885daa 49%,
+      #885daa00 50%
+    ),
+    radial-gradient(50px 80px at 100% 0, #885daa 49%, #885daa00 50%),
+    radial-gradient(50px 80px at -10% 110%, #885daa 49%, #885daa00 50%),
+    radial-gradient(50px 80px at 110% 110%, #885daa 49%, #885daa00 50%);
+  border-radius: 4px;
+  border-bottom: 15px solid #fc691f;
 
   &::before {
     content: '';
     position: absolute;
     top: calc(50% - 5px);
-    height: 10px;
-    width: 100%;
-    background-color: #e6af39;
+    height: 6px;
+    width: 90%;
+    border-radius: 5px;
+    background-color: #b58cd6;
   }
 
   &::after {
     content: '';
     position: absolute;
-    width: 10px;
-    height: 100%;
-    background-color: #e6af39;
+    width: 6px;
+    top: 5%;
+    height: 90%;
+    border-radius: 5px;
+    background-color: #b58cd6;
   }
 `;

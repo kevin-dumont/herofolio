@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components';
 import { MEDIA } from '@constants/theme';
 import { BrickBg } from '@components/Design/BrickBg';
 import { Clock } from '@components/Design/Clock';
+import { Window } from '@components/Design/Window';
 
 const redRoof = '#dd3d08';
 const schoolColor1 = '#ffae00';
@@ -12,12 +13,13 @@ const schoolColor3 = '#f88807';
 const schoolRooftop1 = '#f5631a';
 const schoolRooftop2 = '#ec450d';
 const schoolGroundColor1 = '#ce800a';
-const schoolGroundColor2 = '#b6720d';
-const schoolGroundColor3 = '#ad6d0d';
+const schoolGroundColor2 = '#be770c';
+const schoolGroundColor3 = '#b16f0d';
 const doorColor1 = '#d14702';
 const doorColor2 = '#ad3b02';
 const doorColor3 = '#943303';
-const clockColor = '#662502';
+const clockColor = '#ce0707';
+const behindBellColor = '#4b2800';
 
 export const Bricks = styled(BrickBg)`
   position: absolute;
@@ -178,6 +180,48 @@ const SchoolRooftop = styled.div<SchoolBgProps>`
   }
 `;
 
+const Bell = styled.div`
+  position: absolute;
+  z-index: 1;
+  width: 60px;
+  height: 70px;
+  top: -90px;
+  left: calc(50% - 30px);
+  border-radius: 70px 70px 10px 10px;
+  background: ${behindBellColor};
+
+  &:before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        30px 30px at center,
+        ${schoolColor1} 49%,
+        ${schoolColor1}00 50%
+      ),
+      linear-gradient(to bottom, ${schoolColor1} 50%, ${schoolColor1}00 50.01%)
+        50% 0% / 3px 42px no-repeat,
+      linear-gradient(to bottom, ${schoolColor1} 50%, ${schoolColor1}00 50.01%)
+        50% 90% / 30px 30px no-repeat,
+      radial-gradient(
+        8px 8px at calc(50% - 15px) 67%,
+        ${schoolColor1} 49%,
+        ${schoolColor1}00 50%
+      ),
+      radial-gradient(
+        8px 8px at calc(50% + 15px) 67%,
+        ${schoolColor1} 49%,
+        ${schoolColor1}00 50%
+      ),
+      radial-gradient(
+        10px 10px at 50% 75%,
+        ${schoolColor3} 49%,
+        ${schoolColor3}00 50%
+      );
+  }
+`;
+
 const School = () => (
   <>
     <SchoolBg
@@ -195,7 +239,7 @@ const School = () => (
       bottom="235px"
     />
     <SchoolRooftop />
-    {/* <Bell /> */}
+    <Bell />
 
     <div style={{ position: 'absolute', width: '45.45%', height: '100%' }}>
       <Door />
@@ -267,6 +311,30 @@ const School = () => (
     </div>
 
     <Ground />
+
+    <div
+      style={{
+        position: 'absolute',
+        width: '70px',
+        height: '70px',
+        bottom: '120px',
+        left: '30px',
+      }}
+    >
+      <Window />
+    </div>
+
+    <div
+      style={{
+        position: 'absolute',
+        width: '70px',
+        height: '70px',
+        bottom: '120px',
+        right: '40px',
+      }}
+    >
+      <Window />
+    </div>
   </>
 );
 

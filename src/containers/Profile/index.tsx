@@ -23,6 +23,7 @@ import House from '@components/Design/House';
 import Case from '@components/Design/Case';
 import Coin from '@components/Design/Coin';
 import { MainTitle } from '@components/Design/MainTitle';
+import { Smoke } from '@components/Design/Smoke';
 import { useAppDispatch, useAppSelector } from '@hooks/useAppStore';
 import {
   addJump,
@@ -331,7 +332,7 @@ const Profile = () => {
                 <Bamboos right={-30} zIndex={-1} scale={0.8} rotate={2} />
               </GameElement>
 
-              {/* Building */}
+              {/* Factory */}
               <GameElement
                 data-testid="factory"
                 zIndex={6}

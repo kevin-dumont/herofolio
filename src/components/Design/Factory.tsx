@@ -1,4 +1,7 @@
+import React from 'react';
 import styled from 'styled-components';
+
+import { Smoke } from '@components/Design/Smoke';
 
 const cTrans = 'rgba(0,0,0,0)';
 const cGray = '#c4c4c4';
@@ -90,7 +93,7 @@ linear-gradient(25deg, ${cLightGray} 70%, ${cTrans} 70.1%) 52.6% 75% / 25% 36% n
 linear-gradient(335deg, ${cUltraLightGray} 70%, ${cTrans} 70.1%) 20% 75% / 25% 36% no-repeat
 `;
 
-export const Factory = styled.div`
+export const FactoryWithoutSmoke = styled.div`
   position: absolute;
   height: 500px;
   bottom: 0;
@@ -118,3 +121,28 @@ export const Factory = styled.div`
     background: ${container}, ${rightWall};
   }
 `;
+
+const FactorySmoke1 = styled(Smoke)`
+  top: -95%;
+  left: -13px;
+  height: 100%;
+  width: 100px;
+  z-index: -2;
+`;
+
+const FactorySmoke2 = styled(Smoke)`
+  top: -95%;
+  left: 120px;
+  height: 100%;
+  width: 100px;
+  z-index: -2;
+`;
+
+export const Factory = () => (
+  <>
+    <FactoryWithoutSmoke>
+      <FactorySmoke2 />
+      <FactorySmoke1 />
+    </FactoryWithoutSmoke>
+  </>
+);

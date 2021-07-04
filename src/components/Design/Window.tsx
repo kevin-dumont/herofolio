@@ -7,17 +7,17 @@ export const Window = styled.div`
   align-content: center;
   width: 100%;
   height: 100%;
-  background-color: #9775b1;
+  background-color: #8775b1;
   background-image: radial-gradient(
       50px 80px at 0 0,
-      #885daa 49%,
-      #885daa00 50%
+      #5d63aa 49%,
+      #5d63aa00 50%
     ),
-    radial-gradient(50px 80px at 100% 0, #885daa 49%, #885daa00 50%),
-    radial-gradient(50px 80px at -10% 110%, #885daa 49%, #885daa00 50%),
-    radial-gradient(50px 80px at 110% 110%, #885daa 49%, #885daa00 50%);
+    radial-gradient(50px 80px at 100% 0, #5d63aa 49%, #5d63aa00 50%),
+    radial-gradient(50px 80px at -10% 110%, #5d63aa 49%, #5d63aa00 50%),
+    radial-gradient(50px 80px at 110% 110%, #5d63aa 49%, #5d63aa00 50%);
   border-radius: 4px;
-  border-bottom: 15px solid #fc691f;
+  border-bottom: 15px solid #f88807;
 
   &::before {
     content: '';
@@ -26,7 +26,7 @@ export const Window = styled.div`
     height: 6px;
     width: 90%;
     border-radius: 5px;
-    background-color: #b58cd6;
+    background-color: #9e8ace;
   }
 
   &::after {
@@ -36,6 +36,6 @@ export const Window = styled.div`
     top: 5%;
     height: 90%;
     border-radius: 5px;
-    background-color: #b58cd6;
+    background-color: #9e8ace;
   }
 `;

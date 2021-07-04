@@ -3,7 +3,11 @@ import { CoinType } from '@definitions/entities';
 export const COINS: CoinType[] = [
   {
     location: 'profile',
-    position: 25,
+    position: 24,
+  },
+  {
+    location: 'profile',
+    position: 26,
   },
   {
     location: 'profile',
@@ -11,20 +15,28 @@ export const COINS: CoinType[] = [
   },
   {
     location: 'profile',
-    position: 31,
+    position: 32,
+  },
+  {
+    location: 'profile',
+    position: 34,
+  },
+  {
+    location: 'profile',
+    position: 36,
   },
 
   {
     location: 'profile',
-    position: 50,
-  },
-  {
-    location: 'profile',
-    position: 53,
+    position: 54,
   },
   {
     location: 'profile',
     position: 56,
+  },
+  {
+    location: 'profile',
+    position: 58,
   },
   {
     location: 'formation',

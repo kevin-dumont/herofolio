@@ -5,12 +5,11 @@ export const Clock = styled.div`
   width: 80px;
   height: 80px;
   margin-left: -75px;
-  margin-top: -75px;
   border-radius: 50%;
   background-color: white;
   background-image: radial-gradient(
       circle at center,
-      #4e5a65 4px,
+      #655b4e 4px,
       transparent 4px
     ),
     radial-gradient(
@@ -19,50 +18,8 @@ export const Clock = styled.div`
       transparent 47%,
       transparent 57%,
       white 57%
-    ),
-    linear-gradient(
-      to right,
-      transparent 50%,
-      #d3d3d3 50%,
-      #d3d3d3 51%,
-      transparent 51%
-    ),
-    linear-gradient(
-      to bottom,
-      transparent 50%,
-      #d3d3d3 50%,
-      #d3d3d3 51%,
-      transparent 51%
-    ),
-    linear-gradient(
-      60deg,
-      transparent 50%,
-      #d3d3d3 50%,
-      #d3d3d3 51%,
-      transparent 51%
-    ),
-    linear-gradient(
-      30deg,
-      transparent 50%,
-      #d3d3d3 50%,
-      #d3d3d3 51%,
-      transparent 51%
-    ),
-    linear-gradient(
-      -60deg,
-      transparent 50%,
-      #d3d3d3 50%,
-      #d3d3d3 51%,
-      transparent 51%
-    ),
-    linear-gradient(
-      -30deg,
-      transparent 50%,
-      #d3d3d3 50%,
-      #d3d3d3 51%,
-      transparent 51%
     );
-  border: 10px solid #cc3e12;
+  border: 10px solid #f0e0db;
   box-shadow: inset 0 2px 2px 2px rgb(0 0 0 / 10%), 0 2px 2px rgb(0 0 0 / 10%);
   box-sizing: border-box;
 

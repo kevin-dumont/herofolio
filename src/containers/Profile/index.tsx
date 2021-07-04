@@ -19,11 +19,10 @@ import Clouds from '@components/Design/Clouds';
 import { Mountains } from '@components/Design/Moutains';
 import { Forest } from '@components/Design/Forest';
 import { Tree, Bamboos } from '@components/Design/Vegetation';
-import House from '@components/Design/House';
+import School from '@components/Design/School';
 import Case from '@components/Design/Case';
 import Coin from '@components/Design/Coin';
 import { MainTitle } from '@components/Design/MainTitle';
-import { Smoke } from '@components/Design/Smoke';
 import { useAppDispatch, useAppSelector } from '@hooks/useAppStore';
 import {
   addJump,
@@ -106,7 +105,7 @@ const Profile = () => {
   };
 
   const onTop = (p: number) => {
-    if (p === HOUSE_LEFT + 2) {
+    if (p === HOUSE_LEFT + 5) {
       timeouts?.current.push(
         setTimeout(() => {
           dispatch(move({ location: 'formation', position: 2 }));
@@ -323,13 +322,12 @@ const Profile = () => {
               <GameElement
                 data-testid="house"
                 zIndex={6}
-                width={getX(5)}
+                width={getX(11)}
                 left={getX(HOUSE_LEFT)}
                 height={getY(HOUSE_HEIGHT)}
                 bottom={getY(GROUND_HEIGHT)}
               >
-                <House />
-                <Bamboos right={-30} zIndex={-1} scale={0.8} rotate={2} />
+                <School />
               </GameElement>
 
               {/* Factory */}

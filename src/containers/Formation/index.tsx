@@ -15,7 +15,7 @@ import { Hero } from '@components/Design/Hero';
 import Coin from '@components/Design/Coin';
 import { useAppDispatch, useAppSelector } from '@hooks/useAppStore';
 import { move, takeCoin, selectCoins, selectHeroPositions } from '@store/game';
-import { Door } from '@components/Design/House';
+import { Door } from '@components/Design/School';
 import { Parquet } from '@components/Design/Parquet';
 import { Blackboard } from '@components/Design/Blackboard';
 import { Frieze } from '@components/Design/Frieze';

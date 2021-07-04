@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 interface DoorProps {
   color1?: string;
@@ -12,18 +12,18 @@ export const Door = styled.div<DoorProps>`
   width: 100%;
   background: linear-gradient(
         to left,
-        ${(p) => p.color1 || "#412e1e"} 10%,
-        ${(p) => p.color2 || "#5e452f"} 10%
+        ${(p) => p.color1 || '#412e1e'} 10%,
+        ${(p) => p.color2 || '#5e452f'} 10%
       )
       20px 0 / 20px repeat,
-    ${(p) => p.color2 || "#5e452f"};
-  border: 6px solid ${(p) => p.color3 || "#6b6b6b"};
+    ${(p) => p.color2 || '#5e452f'};
+  border: 6px solid ${(p) => p.color3 || '#6b6b6b'};
   border-bottom: none;
   border-radius: 40% 40% 0 0;
   box-sizing: border-box;
 
   &:before {
-    content: " ";
+    content: ' ';
     width: 22px;
     height: 22px;
     position: absolute;
@@ -32,7 +32,7 @@ export const Door = styled.div<DoorProps>`
     background: radial-gradient(
       100% 100% at 50% 50%,
       transparent 39%,
-      #ffd600 40%,
+      #ffae00 40%,
       #ffd600 50%,
       transparent 51%
     );

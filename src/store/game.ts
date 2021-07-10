@@ -55,6 +55,7 @@ export const gameSlice = createSlice({
       action: PayloadAction<{ location: Location; position: number }>
     ) => {
       const { location, position } = action.payload;
+
       state.heroPositions[location] = position;
       state.hasMove = true;
     },

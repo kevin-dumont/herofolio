@@ -2,7 +2,6 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 
 import { MEDIA } from '@constants/theme';
-import { BrickBg } from '@components/Design/BrickBg';
 import { Clock } from '@components/Design/Clock';
 import { Window } from '@components/Design/Window';
 
@@ -21,8 +20,24 @@ const doorColor3 = '#943303';
 const clockColor = '#ce0707';
 const behindBellColor = '#4b2800';
 
-export const Bricks = styled(BrickBg)`
+const SchoolContainer = styled.div`
   position: absolute;
+  width: 100%;
+  height: 380px;
+  bottom: 0;
+  transform-origin: center bottom;
+
+  ${MEDIA.MAX_M} {
+    transform: scale(0.7);
+  }
+`;
+
+const BottomCenter = styled.div`
+  width: 54.5%;
+  position: absolute;
+  left: 22.5%;
+  bottom: 0;
+  top: 0;
 `;
 
 type RoofProps = {
@@ -121,7 +136,7 @@ const Ground = styled.div<SchoolBgProps>`
   background: ${schoolGroundColor1};
   height: 30px;
   bottom: 0;
-  width: calc(100% + 130px);
+  width: 100%;
   border-radius: 4px 4px 0 0;
 
   &:before {
@@ -151,7 +166,7 @@ const Ground = styled.div<SchoolBgProps>`
 
 const SchoolRooftop = styled.div<SchoolBgProps>`
   position: absolute;
-  width: 60%;
+  width: 48%;
   top: -250px;
   border: 200px solid transparent;
   border-bottom-color: ${schoolRooftop1};
@@ -223,119 +238,77 @@ const Bell = styled.div`
 `;
 
 const School = () => (
-  <>
+  <SchoolContainer>
     <SchoolBg
       variant="shadowed"
       top="150px"
-      right="-50px"
-      left="-50px"
+      right="10px"
+      left="10px"
       bottom="0px"
     />
     <SchoolBg
       variant="overshadowed"
       top="150px"
-      right="-50px"
-      left="-50px"
-      bottom="235px"
+      right="10px"
+      left="10px"
+      bottom="185px"
     />
     <SchoolRooftop />
     <Bell />
+    <Door />
 
-    <div style={{ position: 'absolute', width: '45.45%', height: '100%' }}>
-      <Door />
+    {/* Top center of the house */}
+    <Roof width={110} angle={34} position="right" top={-154} right={288} />
+    <Roof width={110} angle={-34} position="left" top={-154} left={288} />
 
-      {/* Top center of the house */}
-      <Roof width={110} angle={34} position="right" top={-154} right={46} />
-      <Roof width={110} angle={-34} position="left" top={-154} left={46} />
+    <SchoolBg
+      top="-140px"
+      right="375px"
+      left="375px"
+      bottom="calc(100% - 25px)"
+    />
+    <SchoolBg top="-115px" right="355px" left="355px" bottom="0" />
+    <SchoolBg top="-105px" right="320px" left="320px" bottom="0px" />
 
-      <SchoolBg
-        top="-140px"
-        right="130px"
-        left="130px"
-        bottom="calc(100% - 25px)"
-      />
+    {/* Bottom center of the house */}
+    <BottomCenter>
+      <Roof width={220} angle={34} position="right" top={-5} right={0} />
+      <Roof width={220} angle={-34} position="left" top={-5} left={0} />
 
-      <SchoolBg top="-115px" right="95px" left="95px" bottom="0" />
-      <SchoolBg top="-105px" right="82px" left="82px" bottom="0px" />
-
-      {/* Bottom center of the house */}
-      <Roof width={220} angle={34} position="right" top={-5} right={-63} />
-      <Roof width={220} angle={-34} position="left" top={-5} left={-63} />
-
-      <SchoolBg
-        top="10px"
-        right="132px"
-        left="132px"
-        bottom="calc(100% - 25px)"
-      />
-      <SchoolBg
-        top="25px"
-        right="110px"
-        left="110px"
-        bottom="calc(100% - 40px)"
-      />
-      <SchoolBg
-        top="40px"
-        right="95px"
-        left="95px"
-        bottom="calc(100% - 55px)"
-      />
-      <SchoolBg
-        top="55px"
-        right="78px"
-        left="78px"
-        bottom="calc(100% - 70px)"
-      />
-      <SchoolBg
-        top="70px"
-        right="42px"
-        left="42px"
-        bottom="calc(100% - 100px)"
-      />
-      <SchoolBg
-        top="85px"
-        right="20px"
-        left="20px"
-        bottom="calc(100% - 130px)"
-      />
-      <SchoolBg top="100px" right="0px" left="0px" bottom="0px" />
+      <SchoolBg top="70px" right="110px" left="110px" bottom="0px" />
+      <SchoolBg top="82px" right="90px" left="90px" bottom="0px" />
+      <SchoolBg top="94px" right="70px" left="70px" bottom="0px" />
 
       <Clock
         style={{
-          marginTop: 90,
+          marginTop: 60,
           marginLeft: 0,
           left: 'calc(50% - 40px)',
           borderColor: clockColor,
         }}
       />
-    </div>
+    </BottomCenter>
+
+    <Window
+      style={{
+        width: '70px',
+        height: '70px',
+        bottom: '18%',
+        left: '10%',
+      }}
+    />
+
+    <Window
+      style={{
+        width: '70px',
+        height: '70px',
+        bottom: '18%',
+        right: '10%',
+      }}
+    />
 
     <Ground />
-
-    <div
-      style={{
-        position: 'absolute',
-        width: '70px',
-        height: '70px',
-        bottom: '120px',
-        left: '30px',
-      }}
-    >
-      <Window />
-    </div>
-
-    <div
-      style={{
-        position: 'absolute',
-        width: '70px',
-        height: '70px',
-        bottom: '120px',
-        right: '40px',
-      }}
-    >
-      <Window />
-    </div>
-  </>
+  </SchoolContainer>
 );
 
 export default School;

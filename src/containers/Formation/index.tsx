@@ -23,9 +23,9 @@ import { Window } from '@components/Design/Window';
 import { StudentDesk } from '@components/Design/StudentDesk';
 import { Clock } from '@components/Design/Clock';
 import { Platform } from '@components/Design/Platform';
+import { SCHOOL_LEFT } from '@containers/Profile';
 
 // constants
-export const HOUSE_LEFT = 40;
 export const GRID_WIDTH = 40;
 export const PROFILE_LEFT = 30;
 export const LANDSCAPE_CHANGE = 45;
@@ -56,7 +56,7 @@ const Formation = () => {
     if (p === 2) {
       timeouts?.current.push(
         setTimeout(() => {
-          dispatch(move({ location: 'profile', position: HOUSE_LEFT + 2 }));
+          dispatch(move({ location: 'profile', position: SCHOOL_LEFT + 6 }));
           router.push('/');
         }, 200)
       );

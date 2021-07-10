@@ -41,21 +41,21 @@ import {
 import { Factory } from '@components/Design/Factory';
 
 // constants
-export const HOUSE_LEFT = 40;
+export const SCHOOL_LEFT = 38;
 export const FACTORY_LEFT = 80;
 export const GRID_WIDTH = 110;
 export const PROFILE_LEFT = 30;
 export const LANDSCAPE_CHANGE = 45;
 export const HEIGHT_OFFSET = {
   SMALL: {
-    HOUSE_HEIGHT: 5,
+    SCHOOL_HEIGHT: 4,
     FACTORY_HEIGHT: 4,
     SUN_BOTTOM: 2,
     SUN_LEFT: 1,
     PROFILE_BOTTOM: 3,
   },
   LARGE: {
-    HOUSE_HEIGHT: 5,
+    SCHOOL_HEIGHT: 5,
     FACTORY_HEIGHT: 6,
     SUN_BOTTOM: 3,
     SUN_LEFT: 4,
@@ -69,7 +69,7 @@ const Profile = () => {
     GROUND_HEIGHT,
     HERO_SIZE,
     JUMP,
-    HOUSE_HEIGHT,
+    SCHOOL_HEIGHT,
     FACTORY_HEIGHT,
     SUN_BOTTOM,
     SUN_LEFT,
@@ -105,7 +105,7 @@ const Profile = () => {
   };
 
   const onTop = (p: number) => {
-    if (p === HOUSE_LEFT + 5) {
+    if (p === SCHOOL_LEFT + 6) {
       timeouts?.current.push(
         setTimeout(() => {
           dispatch(move({ location: 'formation', position: 2 }));
@@ -322,9 +322,9 @@ const Profile = () => {
               <GameElement
                 data-testid="house"
                 zIndex={6}
-                width={getX(11)}
-                left={getX(HOUSE_LEFT)}
-                height={getY(HOUSE_HEIGHT)}
+                width={getX(13)}
+                left={getX(SCHOOL_LEFT)}
+                height={getY(SCHOOL_HEIGHT)}
                 bottom={getY(GROUND_HEIGHT)}
               >
                 <School />

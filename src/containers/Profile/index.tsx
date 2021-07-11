@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
 
 import { CoinType } from '@definitions/entities';
 import {
@@ -10,7 +9,8 @@ import {
 } from '@constants/grid';
 import { COINS } from '@constants/coins';
 import useMedia from '@hooks/useMedia';
-import GameEngine, { MoveParms } from '@components/GameEngine';
+import GameEngine from '@components/GameEngine';
+import { useGameEngine } from '@components/GameEngine/hooks';
 import { Hero } from '@components/Design/Hero';
 import { Ground } from '@components/Design/Ground';
 import Modal from '@components/Modal';
@@ -39,29 +39,18 @@ import {
   PreloadingMask,
 } from '@containers/Profile/styles';
 import { Factory } from '@components/Design/Factory';
-
-// constants
-export const SCHOOL_LEFT = 38;
-export const FACTORY_LEFT = 80;
-export const GRID_WIDTH = 110;
-export const PROFILE_LEFT = 30;
-export const LANDSCAPE_CHANGE = 45;
-export const HEIGHT_OFFSET = {
-  SMALL: {
-    SCHOOL_HEIGHT: 4,
-    FACTORY_HEIGHT: 4,
-    SUN_BOTTOM: 2,
-    SUN_LEFT: 1,
-    PROFILE_BOTTOM: 3,
-  },
-  LARGE: {
-    SCHOOL_HEIGHT: 5,
-    FACTORY_HEIGHT: 6,
-    SUN_BOTTOM: 3,
-    SUN_LEFT: 4,
-    PROFILE_BOTTOM: 5,
-  },
-};
+import { MoveParams } from '@components/GameEngine/types';
+import useIsTouchDevice from '@hooks/useIsTouchDevice';
+import {
+  HEIGHT_OFFSET,
+  SCHOOL_LEFT,
+  PROFILE_LEFT,
+  GRID_WIDTH,
+  LANDSCAPE_CHANGE,
+  FACTORY_LEFT,
+} from '@containers/Profile/constants';
+import { useBoolean } from '@hooks/useBoolean';
+import GameLoader from '@components/GameLoader';
 
 const Profile = () => {
   const {
@@ -82,27 +71,28 @@ const Profile = () => {
 
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const isTouchDevice = useIsTouchDevice();
 
   const coins = useAppSelector(selectCoins);
   const heroPositions = useAppSelector(selectHeroPositions);
   const hasMove = useAppSelector(selectHasMove);
   const nbJump = useAppSelector(selectNbJump);
 
-  const [showPopin, setShowPopin] = useState(false);
-  const [isActive, setIsActive] = useState(true);
-  const [preloading, setPreloading] = useState(true);
+  const [isPopinShown, showPopin, hidePopin] = useBoolean();
+  const [isGameEnabled, enableGame, disableGame] = useBoolean();
+  const [isPreloading, beginPreload, finishPreload] = useBoolean();
 
   const timeouts = useRef<NodeJS.Timeout[]>([]);
 
-  const closeModal = () => {
-    setShowPopin(false);
-    setIsActive(true);
-  };
+  const closeModal = useCallback(() => {
+    showPopin();
+    enableGame();
+  }, []);
 
-  const openModal = () => {
-    setShowPopin(true);
-    setIsActive(false);
-  };
+  const openModal = useCallback(() => {
+    hidePopin();
+    disableGame();
+  }, []);
 
   const onTop = (p: number) => {
     if (p === SCHOOL_LEFT + 6) {
@@ -123,16 +113,13 @@ const Profile = () => {
     }
   };
 
-  const isCoinTaken = useCallback(
-    (coin: CoinType) =>
-      !!coins.find(
-        ({ location, position }) =>
-          coin.location === location && coin.position === position
-      ),
-    [coins]
-  );
+  const isCoinTaken = (coin: CoinType) =>
+    !!coins.find(
+      ({ location, position }) =>
+        coin.location === location && coin.position === position
+    );
 
-  const onMove = ({ position }: MoveParms) => {
+  const onMove = ({ position }: MoveParams) => {
     dispatch(move({ location: 'profile', position }));
 
     COINS.forEach((coin, i) => {
@@ -148,8 +135,13 @@ const Profile = () => {
 
   const preload = () => {
     if (timeouts?.current) {
-      timeouts.current.push(setTimeout(() => setPreloading(true), 500));
-      timeouts.current.push(setTimeout(() => setPreloading(false), 1000));
+      timeouts.current.push(setTimeout(beginPreload, 500));
+      timeouts.current.push(
+        setTimeout(() => {
+          finishPreload();
+          enableGame();
+        }, 1000)
+      );
     }
   };
 
@@ -164,314 +156,322 @@ const Profile = () => {
     };
   }, []);
 
+  const {
+    canJump,
+    isJumping,
+    heroLeft,
+    isWalking,
+    centerPosition,
+    positionInTheGrid,
+    width,
+    height,
+    getY,
+    getX,
+    isLoading,
+    getElementProps,
+    getPlanProps,
+  } = useGameEngine({
+    onJump,
+    onTop,
+    onMove,
+    initPosition: heroPositions.profile,
+    isActive: isGameEnabled,
+    maxRightOffset: GRID_WIDTH,
+    nbLines: GRID_HEIGHT,
+    elementWidth: GRID_ELEMENT_WIDTH,
+  });
+
   return (
     <>
-      <Head>
-        <title>
-          Herofolio - Le portfolio de Kevin Dumont, développeur React passionné
-          depuis plus de 10 ans sur Paris
-        </title>
-        <meta
-          name="description"
-          content="Découvrez le portfolio de Kévin Dumont, développeur React passionné depuis plus de 10 ans sur la région de Paris"
-        />
-      </Head>
-
-      {preloading && <PreloadingMask />}
+      {isPreloading && <PreloadingMask />}
+      <GameLoader show={isLoading} />
 
       <GameEngine
-        isActive={isActive}
-        initPosition={heroPositions.profile}
-        onJump={onJump}
-        onTop={onTop}
-        onMove={onMove}
-        maxRightOffset={GRID_WIDTH}
-        nbLines={GRID_HEIGHT}
-        elementWidth={GRID_ELEMENT_WIDTH}
+        width={width}
+        height={height}
+        background={
+          !isPreloading && positionInTheGrid < LANDSCAPE_CHANGE
+            ? '#79d4ff'
+            : '#ffcde2'
+        }
       >
-        {({
-          canJump,
-          isJumping,
-          heroLeft,
-          isWalking,
-          firstPlanLeft,
-          secondPlanLeft,
-          thirdPlanLeft,
-          fourthPlanLeft,
-          fithPlanLeft,
-          isTouchDevice,
-          centerPosition,
-          positionInTheGrid,
-          width,
-          height,
-          getY,
-          getX,
-          GameContainer,
-          GameElement,
-          Plan,
-          isLoading,
-        }) => (
-          <GameContainer
-            width={width}
-            height={height}
-            background={
-              !preloading && positionInTheGrid < LANDSCAPE_CHANGE
-                ? '#79d4ff'
-                : '#ffcde2'
-            }
+        {/* Hero */}
+        <GameEngine.Element
+          {...getElementProps({
+            id: 'instructions',
+            left: heroLeft,
+            bottom: GROUND_HEIGHT,
+            width: 1,
+            height: HERO_SIZE,
+            zIndex: 10,
+          })}
+        >
+          <Hero
+            isWalking={isWalking && canJump}
+            jumpHeight={getY(JUMP)}
+            isJumping={isJumping}
+            show={!isLoading}
+          />
+        </GameEngine.Element>
+
+        {/* Instructions */}
+        <GameEngine.Element
+          {...getElementProps({
+            id: 'instructions',
+            left: centerPosition - 2,
+            bottom: 0,
+            width: 6,
+            height: GROUND_HEIGHT,
+            zIndex: 11,
+          })}
+        >
+          {(nbJump === 0 || !hasMove) && (
+            <CommandsHelper>
+              {!isTouchDevice
+                ? `Use your keyboard arrows to move and space to jump!`
+                : `Use the commands on the right to move and jump!`}
+            </CommandsHelper>
+          )}
+        </GameEngine.Element>
+
+        <GameEngine.Plan {...getPlanProps(1)}>
+          {/* Main title */}
+          <GameEngine.Element
+            {...getElementProps({
+              id: 'title',
+              left: centerPosition - 3,
+              bottom: GROUND_HEIGHT,
+              width: 8,
+              height: 2,
+              zIndex: 9,
+            })}
           >
-            {/* Hero */}
-            <GameElement
-              zIndex={10}
-              bottom={getY(GROUND_HEIGHT)}
-              left={heroLeft * 60}
-              height={getY(HERO_SIZE)}
-              width={getX(1)}
+            <MainTitle />
+          </GameEngine.Element>
+
+          {/* profile Case */}
+          <GameEngine.Element
+            {...getElementProps({
+              id: 'profile',
+              left: PROFILE_LEFT,
+              bottom: PROFILE_BOTTOM,
+              width: 1,
+              height: 1,
+              zIndex: 6,
+            })}
+          >
+            <Case
+              isJumping={isJumping && positionInTheGrid === PROFILE_LEFT}
+              jumpHeight={getY(1)}
+              onClick={openModal}
             >
-              <Hero
-                isWalking={isWalking && canJump}
-                jumpHeight={getY(JUMP)}
-                isJumping={isJumping}
-                show={!isLoading}
-              />
-            </GameElement>
+              Profile
+            </Case>
+          </GameEngine.Element>
 
-            {/* Instructions */}
-            <GameElement
-              data-testid="instructions"
-              zIndex={11}
-              left={getX(centerPosition - 2)}
-              bottom={0}
-              width={getX(6)}
-              height={getY(GROUND_HEIGHT)}
-            >
-              {(nbJump === 0 || !hasMove) && (
-                <CommandsHelper>
-                  {!isTouchDevice
-                    ? `Use your keyboard arrows to move and space to jump!`
-                    : `Use the commands on the right to move and jump!`}
-                </CommandsHelper>
-              )}
-            </GameElement>
-
-            <Plan zIndex={5} left={getX(firstPlanLeft)} data-testid="plan1">
-              {/* Main title */}
-              <GameElement
-                data-testid="title"
-                zIndex={9}
-                left={getX(centerPosition - 3)}
-                width={getX(8)}
-                bottom={getY(GROUND_HEIGHT)}
-                height={getX(2)}
-              >
-                <MainTitle />
-              </GameElement>
-
-              {/* profile Case */}
-              <GameElement
-                id="profile"
-                left={getX(PROFILE_LEFT)}
-                bottom={getY(PROFILE_BOTTOM)}
-                width={getX(1)}
-                height={getY(1)}
-                zIndex={6}
-              >
-                <Case
-                  isJumping={isJumping && positionInTheGrid === PROFILE_LEFT}
-                  jumpHeight={getY(1)}
-                  onClick={openModal}
+          {/* Coins */}
+          {COINS.map(
+            (coin, i) =>
+              coin.location === 'profile' && (
+                <GameEngine.Element
+                  key={coin.location + coin.position}
+                  {...getElementProps({
+                    id: `coins-${i}`,
+                    left: coin.position,
+                    bottom: GROUND_HEIGHT,
+                    width: 1,
+                    height: 1,
+                    zIndex: 11,
+                  })}
                 >
-                  Profile
-                </Case>
-              </GameElement>
+                  <Coin taken={isCoinTaken(coin)} />
+                </GameEngine.Element>
+              )
+          )}
 
-              {/* Coins */}
-              <GameElement
-                id="coins"
-                left={getX(0)}
-                bottom={getY(GROUND_HEIGHT)}
-                width={getX(GRID_WIDTH)}
-                height={getX(3)}
-                zIndex={11}
-              >
-                {COINS.map(
-                  (coin) =>
-                    coin.location === 'profile' && (
-                      <Coin
-                        key={coin.location + coin.position}
-                        width={getX(1)}
-                        height={getY(3)}
-                        taken={isCoinTaken(coin)}
-                        left={getX(coin.position)}
-                      />
-                    )
-                )}
-
-                {/* Fix : coin triggered at the begining to preload end animation */}
-                {preloading && (
-                  <Coin
-                    taken
-                    width={getX(1)}
-                    height={getY(3)}
-                    left={getX(-1)}
-                  />
-                )}
-              </GameElement>
-
-              {/* House */}
-              <GameElement
-                data-testid="house"
-                zIndex={6}
-                width={getX(13)}
-                left={getX(SCHOOL_LEFT)}
-                height={getY(SCHOOL_HEIGHT)}
-                bottom={getY(GROUND_HEIGHT)}
-              >
-                <School />
-              </GameElement>
-
-              {/* Factory */}
-              <GameElement
-                data-testid="factory"
-                zIndex={6}
-                width={getX(14)}
-                left={getX(FACTORY_LEFT)}
-                height={getY(FACTORY_HEIGHT)}
-                bottom={getY(GROUND_HEIGHT)}
-              >
-                <Factory />
-              </GameElement>
-
-              {/* First plan Trees */}
-              <GameElement
-                width={getX(GRID_WIDTH)}
-                bottom={getY(GROUND_HEIGHT)}
-                height={getY(2)}
-                left={0}
-              >
-                <Tree scale={0.9} rotate={0} left={1100} />
-                <Tree scale={1} rotate={-1} left={1700} />
-                <Bamboos left={2000} zIndex={-1} scale={0.8} rotate={2} />
-                <Bamboos left={2650} zIndex={-1} scale={0.9} rotate={1} />
-              </GameElement>
-
-              {/* Ground */}
-              <GameElement
-                data-testid="ground"
-                zIndex={10}
-                bottom={0}
-                left={0}
-                height={getY(GROUND_HEIGHT)}
-                width={getX(GRID_WIDTH)}
-              >
-                <Ground grassColor="#4ba446" groundColor="#896443" />
-                <Ground
-                  grassColor="#b1ec54"
-                  groundColor="#b8a48c"
-                  opacity={
-                    !preloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
-                  }
-                />
-              </GameElement>
-            </Plan>
-
-            {/* Second plan trees */}
-
-            <Plan zIndex={4} left={getX(secondPlanLeft)} data-testid="plan2">
-              <GameElement
-                width={getX(GRID_WIDTH)}
-                bottom={getY(GROUND_HEIGHT)}
-                height={getY(2)}
-                left={0}
-              >
-                <Tree scale={0.5} rotate={1} left={100} pale />
-                <Tree scale={0.6} rotate={0} left={350} pale />
-                <Tree scale={0.6} rotate={0} left={950} pale />
-                <Tree scale={0.5} rotate={2} left={1200} pale />
-                <Bamboos left={1500} zIndex={-1} scale={0.6} rotate={-1} />
-                <Bamboos left={1520} zIndex={-1} scale={0.6} rotate={1} />
-                <Bamboos left={1800} zIndex={-1} scale={0.3} rotate={-1} />
-                <Bamboos left={1820} zIndex={-1} scale={0.3} rotate={0} />
-                <Bamboos left={2050} zIndex={-1} scale={0.5} rotate={-1} />
-                <Bamboos left={2070} zIndex={-1} scale={0.5} rotate={0} />
-                <Bamboos left={2300} zIndex={-1} scale={0.4} rotate={0} />
-                <Bamboos left={2320} zIndex={-1} scale={0.4} rotate={2} />{' '}
-              </GameElement>
-            </Plan>
-
-            <Plan zIndex={3} left={getX(thirdPlanLeft)} data-testid="plan3">
-              <GameElement
-                height={getY(4)}
-                left={0}
-                bottom={getY(GROUND_HEIGHT)}
-                width={getX(GRID_WIDTH + 8)}
-              >
-                <Forest />
-                <Forest
-                  color="#8ebd43"
-                  opacity={
-                    !preloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
-                  }
-                />
-              </GameElement>
-            </Plan>
-
-            <Plan zIndex={2} left={getX(fourthPlanLeft)} data-testid="plan4">
-              <GameElement
-                left={0}
-                bottom={getY(GROUND_HEIGHT)}
-                height={getY(4)}
-                width={getY(GRID_WIDTH + 8)}
-              >
-                <Mountains
-                  angle={165}
-                  percent={65}
-                  moutainWidth={5}
-                  mountainHeight={15}
-                  background="#6bbce2"
-                />
-                <Mountains
-                  angle={165}
-                  percent={65}
-                  moutainWidth={5}
-                  mountainHeight={15}
-                  background="#9e8791"
-                  opacity={
-                    !preloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
-                  }
-                />
-              </GameElement>
-            </Plan>
-
-            <Plan zIndex={1} left={getX(fithPlanLeft)} data-testid="plan5">
-              <Clouds getX={getX} getY={getY} GameElement={GameElement} />
-            </Plan>
-
-            <GameElement
-              data-tesid="sun"
-              left={getX(SUN_LEFT)}
-              bottom={getY(SUN_BOTTOM)}
-              width={getX(3)}
-              height={getY(3)}
-              zIndex={0}
+          {/* preload to prevent laggy coin animation */}
+          {isPreloading && (
+            <GameEngine.Element
+              {...getElementProps({
+                id: `preloading-coins`,
+                left: -1,
+                bottom: GROUND_HEIGHT,
+                width: 1,
+                height: 1,
+                zIndex: 0,
+              })}
             >
-              <Sun
-                color="#ffffcc"
-                opacity={
-                  !preloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
-                }
-              />
-              <Sun
-                opacity={
-                  !preloading && positionInTheGrid < LANDSCAPE_CHANGE ? 1 : 0
-                }
-              />
-            </GameElement>
-          </GameContainer>
-        )}
+              <Coin taken />
+            </GameEngine.Element>
+          )}
+
+          {/* House */}
+          <GameEngine.Element
+            {...getElementProps({
+              id: `house`,
+              left: SCHOOL_LEFT,
+              bottom: GROUND_HEIGHT,
+              width: 13,
+              height: SCHOOL_HEIGHT,
+              zIndex: 6,
+            })}
+          >
+            <School />
+          </GameEngine.Element>
+
+          {/* Factory */}
+          <GameEngine.Element
+            {...getElementProps({
+              'data-testid': 'factory',
+              zIndex: 6,
+              width: 14,
+              left: FACTORY_LEFT,
+              height: FACTORY_HEIGHT,
+              bottom: GROUND_HEIGHT,
+            })}
+          >
+            <Factory />
+          </GameEngine.Element>
+
+          {/* First plan Trees */}
+          <GameEngine.Element
+            {...getElementProps({
+              width: GRID_WIDTH,
+              bottom: GROUND_HEIGHT,
+              height: 2,
+              left: 0,
+            })}
+          >
+            <Tree scale={0.9} rotate={0} left={1100} />
+            <Tree scale={1} rotate={-1} left={1700} />
+            <Bamboos left={2000} zIndex={-1} scale={0.8} rotate={2} />
+            <Bamboos left={2650} zIndex={-1} scale={0.9} rotate={1} />
+          </GameEngine.Element>
+
+          {/* Ground */}
+          <GameEngine.Element
+            {...getElementProps({
+              'data-testid': 'ground',
+              width: GRID_WIDTH,
+              height: GROUND_HEIGHT,
+              left: 0,
+              bottom: 0,
+              zIndex: 10,
+            })}
+          >
+            <Ground grassColor="#4ba446" groundColor="#896443" />
+            <Ground
+              grassColor="#b1ec54"
+              groundColor="#b8a48c"
+              opacity={
+                !isPreloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
+              }
+            />
+          </GameEngine.Element>
+        </GameEngine.Plan>
+
+        {/* Second plan trees */}
+        <GameEngine.Plan {...getPlanProps(2)}>
+          <GameEngine.Element
+            {...getElementProps({
+              width: GRID_WIDTH,
+              bottom: GROUND_HEIGHT,
+              height: 2,
+              left: 0,
+            })}
+          >
+            <Tree scale={0.5} rotate={1} left={100} pale />
+            <Tree scale={0.6} rotate={0} left={350} pale />
+            <Tree scale={0.6} rotate={0} left={950} pale />
+            <Tree scale={0.5} rotate={2} left={1200} pale />
+            <Bamboos left={1500} zIndex={-1} scale={0.6} rotate={-1} />
+            <Bamboos left={1520} zIndex={-1} scale={0.6} rotate={1} />
+            <Bamboos left={1800} zIndex={-1} scale={0.3} rotate={-1} />
+            <Bamboos left={1820} zIndex={-1} scale={0.3} rotate={0} />
+            <Bamboos left={2050} zIndex={-1} scale={0.5} rotate={-1} />
+            <Bamboos left={2070} zIndex={-1} scale={0.5} rotate={0} />
+            <Bamboos left={2300} zIndex={-1} scale={0.4} rotate={0} />
+            <Bamboos left={2320} zIndex={-1} scale={0.4} rotate={2} />{' '}
+          </GameEngine.Element>
+        </GameEngine.Plan>
+
+        <GameEngine.Plan {...getPlanProps(3)}>
+          <GameEngine.Element
+            {...getElementProps({
+              width: GRID_WIDTH + 8,
+              bottom: GROUND_HEIGHT,
+              height: 4,
+              left: 0,
+            })}
+          >
+            <Forest />
+            <Forest
+              color="#8ebd43"
+              opacity={
+                !isPreloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
+              }
+            />
+          </GameEngine.Element>
+        </GameEngine.Plan>
+
+        <GameEngine.Plan {...getPlanProps(4)}>
+          <GameEngine.Element
+            {...getElementProps({
+              width: GRID_WIDTH + 8,
+              bottom: GROUND_HEIGHT,
+              height: 4,
+              left: 0,
+            })}
+          >
+            <Mountains
+              angle={165}
+              percent={65}
+              moutainWidth={5}
+              mountainHeight={15}
+              background="#6bbce2"
+            />
+            <Mountains
+              angle={165}
+              percent={65}
+              moutainWidth={5}
+              mountainHeight={15}
+              background="#9e8791"
+              opacity={
+                !isPreloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
+              }
+            />
+          </GameEngine.Element>
+        </GameEngine.Plan>
+
+        <GameEngine.Plan {...getPlanProps(5)}>
+          <Clouds getX={getX} getY={getY} GameElement={GameEngine.Element} />
+        </GameEngine.Plan>
+
+        <GameEngine.Element
+          {...getElementProps({
+            'data-testid': 'sun',
+            left: SUN_LEFT,
+            bottom: SUN_BOTTOM,
+            width: 3,
+            height: 3,
+            zIndex: 0,
+          })}
+        >
+          <Sun
+            color="#ffffcc"
+            opacity={
+              !isPreloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
+            }
+          />
+          <Sun
+            opacity={
+              !isPreloading && positionInTheGrid < LANDSCAPE_CHANGE ? 1 : 0
+            }
+          />
+        </GameEngine.Element>
       </GameEngine>
 
-      <Modal show={showPopin} onEscapePress={closeModal}>
+      <Modal show={isPopinShown} onEscapePress={closeModal}>
         {({ CloseButton, Container }) => (
           <>
             <CloseButton

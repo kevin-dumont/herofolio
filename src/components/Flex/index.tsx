@@ -28,7 +28,6 @@ const FlexUi = styled.div<FlexUiProps>`
   flex: ${({ flex }) => flex || '0 1 auto'};
 `;
 
-// eslint-disable-next-line react/jsx-props-no-spreading
 const Flex = ({ ...props }: FlexProps) => <FlexUi {...props} />;
 
 export default Flex;

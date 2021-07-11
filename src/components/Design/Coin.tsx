@@ -1,18 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 
 import { FadeOut } from '@components/Design/FadeOut';
 
-interface WrapperProps {
-  width: number;
-  height: number;
-  left: number;
-}
-
 export interface CoinProps {
-  left: number;
-  width: number;
-  height: number;
   taken: boolean;
 }
 
@@ -108,19 +99,17 @@ const CoinUi = styled.div<CoinUiProps>`
   }
 `;
 
-const Wrapper = styled.div<WrapperProps>`
+const Wrapper = styled.div`
   position: absolute;
   display: flex;
   justify-content: center;
   bottom: 0;
   top: 0;
   transition: all 0.5s ease;
-  width: ${(props) => props.width}px;
-  left: ${(props) => props.left}px;
 `;
 
-const Coin = ({ left, width, height, taken }: CoinProps) => (
-  <Wrapper width={width} height={height} left={left}>
+const Coin = ({ taken }: CoinProps) => (
+  <Wrapper>
     <FadeOut duration="0.5s" hide={taken}>
       <CoinUi taken={taken}>
         <div className="side heads">$</div>
@@ -130,4 +119,4 @@ const Coin = ({ left, width, height, taken }: CoinProps) => (
   </Wrapper>
 );
 
-export default Coin;
+export default memo(Coin);

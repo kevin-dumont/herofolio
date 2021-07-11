@@ -1,9 +1,9 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { FC } from 'react';
 import { AppProps } from 'next/app';
 
 import { wrapper } from '@store/index';
 import GlobalStyles from '@components/Design/GlobalStyles';
+import About from '@components/About';
 
 const SafeHydrate: FC = ({ children }) => (
   <div suppressHydrationWarning>
@@ -14,6 +14,8 @@ const SafeHydrate: FC = ({ children }) => (
 const WrappedApp: FC<AppProps> = ({ Component, pageProps }) => (
   <SafeHydrate>
     <GlobalStyles />
+
+    <About />
     <Component {...pageProps} />
   </SafeHydrate>
 );

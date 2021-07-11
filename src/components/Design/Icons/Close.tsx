@@ -51,7 +51,6 @@ export interface CloseProps {
 }
 
 export const Close = ({ color, size, ...props }: CloseProps) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <CloseInconContainer {...props} size={size}>
     <CloseIcon color={color} size={size} />
   </CloseInconContainer>

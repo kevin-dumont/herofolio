@@ -59,7 +59,6 @@ const Modal = ({
       <ModalBg
         disappear={disappear}
         animationDisabled={disableStartAnimation}
-        // eslint-disable-next-line react/jsx-props-no-spreading
         {...props}
       >
         {children({ CloseButton, Container })}

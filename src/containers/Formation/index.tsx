@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
 
 import { CoinType } from '@definitions/entities';
 import {
@@ -10,7 +9,7 @@ import {
 } from '@constants/grid';
 import { COINS } from '@constants/coins';
 import useMedia from '@hooks/useMedia';
-import GameEngine, { MoveParms } from '@components/GameEngine';
+import GameEngine from '@components/GameEngine';
 import { Hero } from '@components/Design/Hero';
 import Coin from '@components/Design/Coin';
 import { useAppDispatch, useAppSelector } from '@hooks/useAppStore';
@@ -23,12 +22,16 @@ import { Window } from '@components/Design/Window';
 import { StudentDesk } from '@components/Design/StudentDesk';
 import { Clock } from '@components/Design/Clock';
 import { Platform } from '@components/Design/Platform';
-import { SCHOOL_LEFT } from '@containers/Profile';
-
-// constants
-export const GRID_WIDTH = 40;
-export const PROFILE_LEFT = 30;
-export const LANDSCAPE_CHANGE = 45;
+import { SCHOOL_LEFT } from '@containers/Profile/constants';
+import { MoveParams } from '@components/GameEngine/types';
+import { useGameEngine } from '@components/GameEngine/hooks';
+import {
+  GRID_WIDTH,
+  STUDENT_DESKS,
+  STUDENT_DESKS_SMALL,
+} from '@containers/Formation/constants';
+import { Wallpaper } from '@components/Design/Wallpaper';
+import GameLoader from '@components/GameLoader';
 
 const Formation = () => {
   const isSmall = useMedia((_, height) => height < 600);
@@ -63,16 +66,13 @@ const Formation = () => {
     }
   };
 
-  const isCoinTaken = useCallback(
-    (coin: CoinType) =>
-      !!coins.find(
-        ({ location, position }) =>
-          coin.location === location && coin.position === position
-      ),
-    [coins]
-  );
+  const isCoinTaken = (coin: CoinType) =>
+    !!coins.find(
+      ({ location, position }) =>
+        coin.location === location && coin.position === position
+    );
 
-  const onMove = ({ position }: MoveParms) => {
+  const onMove = ({ position }: MoveParams) => {
     dispatch(move({ location: 'formation', position }));
 
     COINS.forEach((coin, i) => {
@@ -96,270 +96,205 @@ const Formation = () => {
     []
   );
 
+  const {
+    canJump,
+    isJumping,
+    heroLeft,
+    isWalking,
+    width,
+    height,
+    getY,
+    isLoading,
+    getPlanProps,
+    getElementProps,
+  } = useGameEngine({
+    onTop,
+    onMove,
+    isActive: true,
+    initPosition: heroPositions.formation,
+    maxRightOffset: GRID_WIDTH,
+    nbLines: GRID_HEIGHT,
+    elementWidth: GRID_ELEMENT_WIDTH,
+  });
+
   return (
     <>
-      <Head>
-        <title>
-          Herofolio - Le portfolio de Kevin Dumont, développeur React passionné
-          depuis plus de 10 ans sur Paris
-        </title>
-        <meta
-          name="description"
-          content="Découvrez le portfolio de Kévin Dumont, développeur React passionné depuis plus de 10 ans sur la région de Paris"
-        />
-      </Head>
-      <GameEngine
-        isActive
-        initPosition={heroPositions.formation}
-        onTop={onTop}
-        onMove={onMove}
-        maxRightOffset={GRID_WIDTH}
-        nbLines={GRID_HEIGHT}
-        elementWidth={GRID_ELEMENT_WIDTH}
-      >
-        {({
-          canJump,
-          isJumping,
-          heroLeft,
-          isWalking,
-          firstPlanLeft,
-          width,
-          height,
-          getY,
-          getX,
-          GameContainer,
-          GameElement,
-          Plan,
-          isLoading,
-        }) => (
-          <GameContainer width={width} height={height} background="#aff39e ">
-            <GameElement
-              zIndex={0}
-              top={0}
-              left={getX(firstPlanLeft)}
-              height={getY(GRID_WIDTH)}
-              width={getX(GRID_WIDTH)}
+      <GameLoader show={isLoading} />
+
+      <GameEngine width={width} height={height} background="#aff39e ">
+        {/* Hero */}
+        <GameEngine.Element
+          {...getElementProps({
+            zIndex: 10,
+            left: heroLeft,
+            height: HERO_SIZE,
+            width: 1,
+            bottom: GROUND_HEIGHT - 1,
+          })}
+        >
+          <Hero
+            isWalking={isWalking && canJump}
+            jumpHeight={getY(JUMP + 1)}
+            isJumping={isJumping}
+            show={!isLoading}
+          />
+        </GameEngine.Element>
+
+        <GameEngine.Plan {...getPlanProps(1)}>
+          {/* Wallpaper */}
+          <GameEngine.Element
+            {...getElementProps({
+              zIndex: 0,
+              top: 0,
+              left: 0,
+              height: GRID_WIDTH,
+              width: GRID_WIDTH,
+            })}
+          >
+            <Wallpaper />
+          </GameEngine.Element>
+
+          {/* Student Desks */}
+          {STUDENT_DESKS.map(({ left, perspective }, i) => (
+            <GameEngine.Element
+              key={`student-desk-${left}`}
+              {...getElementProps({
+                left,
+                id: `student-desk-${i}`,
+                bottom: STUDENT_DESKS_BOTTOM,
+                width: 3,
+                height: STUDENT_DESKS_HEIGHT,
+                zIndex: 12,
+              })}
             >
-              <div
-                style={{
-                  position: 'absolute',
-                  width: '100%',
-                  height: '100%',
-                  background:
-                    'linear-gradient(90deg, rgba(0, 0, 0, 0) 60%, #9ddf8d 40%) 0 0 / 10px',
-                }}
-              />
-            </GameElement>
-            {/* Hero */}
-            <GameElement
-              zIndex={10}
-              bottom={getY(GROUND_HEIGHT - 1)}
-              left={heroLeft * 60}
-              height={getY(HERO_SIZE)}
-              width={getX(1)}
-            >
-              <Hero
-                isWalking={isWalking && canJump}
-                jumpHeight={getY(JUMP + 1)}
-                isJumping={isJumping}
-                show={!isLoading}
-              />
-            </GameElement>
+              <StudentDesk perspectiveOrigin={perspective} scale="0.8" />
+            </GameEngine.Element>
+          ))}
 
-            <Plan zIndex={11} left={getX(firstPlanLeft)} data-testid="plan1">
-              {/* Student Desks */}
-              <GameElement
-                id="student-desk-1"
-                left={getX(8)}
-                bottom={getY(STUDENT_DESKS_BOTTOM)}
-                width={getX(3)}
-                height={getY(STUDENT_DESKS_HEIGHT)}
-                zIndex={12}
+          {!isSmall &&
+            STUDENT_DESKS_SMALL.map(({ left, perspective }, i) => (
+              <GameEngine.Element
+                key={`student-desk-small-${left}`}
+                {...getElementProps({
+                  left,
+                  id: `student-desk-${i}`,
+                  bottom: STUDENT_DESKS_BOTTOM - 2,
+                  width: 3,
+                  height: STUDENT_DESKS_HEIGHT,
+                  zIndex: 12,
+                })}
               >
-                <StudentDesk perspectiveOrigin="200%" scale="0.8" />
-              </GameElement>
-              <GameElement
-                id="student-desks-2"
-                left={getX(11)}
-                bottom={getY(STUDENT_DESKS_BOTTOM)}
-                width={getX(3)}
-                height={getY(STUDENT_DESKS_HEIGHT)}
-                zIndex={12}
-              >
-                <StudentDesk perspectiveOrigin="100%" scale="0.8" />
-              </GameElement>
-              <GameElement
-                id="student-desks-3"
-                left={getX(14)}
-                bottom={getY(STUDENT_DESKS_BOTTOM)}
-                width={getX(3)}
-                height={getY(STUDENT_DESKS_HEIGHT)}
-                zIndex={12}
-              >
-                <StudentDesk perspectiveOrigin="0" scale="0.8" />
-              </GameElement>
-              <GameElement
-                id="student-desks-4"
-                left={getX(17)}
-                bottom={getY(STUDENT_DESKS_BOTTOM)}
-                width={getX(3)}
-                height={getY(STUDENT_DESKS_HEIGHT)}
-                zIndex={12}
-              >
-                <StudentDesk perspectiveOrigin="-100%" scale="0.8" />
-              </GameElement>
+                <StudentDesk perspectiveOrigin={perspective} scale="0.8" />
+              </GameEngine.Element>
+            ))}
 
-              {!isSmall && (
-                <>
-                  <GameElement
-                    id="student-desk-5"
-                    left={getX(7)}
-                    bottom={getY(1)}
-                    width={getX(3)}
-                    height={getY(2)}
-                    zIndex={12}
-                  >
-                    <StudentDesk perspectiveOrigin="200%" />
-                  </GameElement>
-                  <GameElement
-                    id="student-desks-6"
-                    left={getX(11)}
-                    bottom={getY(1)}
-                    width={getX(3)}
-                    height={getY(2)}
-                    zIndex={12}
-                  >
-                    <StudentDesk perspectiveOrigin="100%" />
-                  </GameElement>
-                  <GameElement
-                    id="student-desks-7"
-                    left={getX(15)}
-                    bottom={getY(1)}
-                    width={getX(3)}
-                    height={getY(2)}
-                    zIndex={12}
-                  >
-                    <StudentDesk perspectiveOrigin="0" />
-                  </GameElement>
-                  <GameElement
-                    id="student-desks-4"
-                    left={getX(19)}
-                    bottom={getY(1)}
-                    width={getX(3)}
-                    height={getY(2)}
-                    zIndex={12}
-                  >
-                    <StudentDesk perspectiveOrigin="-100%" />
-                  </GameElement>
-                </>
-              )}
-            </Plan>
+          {/* Door */}
+          <GameEngine.Element
+            {...getElementProps({
+              id: 'door',
+              left: 1,
+              bottom: GROUND_HEIGHT,
+              width: 3,
+              height: 3,
+            })}
+          >
+            <Door />
+          </GameEngine.Element>
 
-            <Plan zIndex={5} left={getX(firstPlanLeft)} data-testid="plan2">
-              {/* Door */}
-              <GameElement
-                id="door"
-                left={getX(1)}
-                bottom={getY(GROUND_HEIGHT)}
-                width={getX(3)}
-                height={getX(3)}
-                zIndex={9}
-              >
-                <Door />
-              </GameElement>
+          {/* Window */}
+          <GameEngine.Element
+            {...getElementProps({
+              id: 'window',
+              left: 7,
+              bottom: GROUND_HEIGHT + 2,
+              width: 2,
+              height: 2,
+            })}
+          >
+            <Window />
+          </GameEngine.Element>
 
-              {/* Window */}
-              <GameElement
-                id="window"
-                left={getX(7)}
-                bottom={getY(GROUND_HEIGHT + 2)}
-                width={getX(2)}
-                height={getX(2)}
-                zIndex={9}
-              >
-                <Window />
-              </GameElement>
+          {/* Blackboard */}
+          <GameEngine.Element
+            {...getElementProps({
+              id: 'blackboard',
+              left: 12,
+              bottom: GROUND_HEIGHT + 3,
+              width: 6,
+              height: 2,
+            })}
+          >
+            <Frieze>A B C D Mes formations</Frieze>
+            <Blackboard>
+              <br />
+              #1 Licence Web & mobile • 2017 - 2018 • Conservatoire National des
+              arts et métiers
+              <br />
+              <br />
+              <br />
+              #2 BTS SIO • 2013 - 2015 • Lycée Saint-Vincent, Senlis
+            </Blackboard>
+          </GameEngine.Element>
 
-              {/* Blackboard */}
-              <GameElement
-                id="blackboard"
-                left={getX(12)}
-                bottom={getY(GROUND_HEIGHT + 3)}
-                width={getX(6)}
-                height={getX(2)}
-                zIndex={9}
-              >
-                <Frieze>A B C D Mes formations</Frieze>
-                <Blackboard>
-                  <br />
-                  #1 Licence Web & mobile • 2017 - 2018 • Conservatoire National
-                  des arts et métiers
-                  <br />
-                  <br />
-                  <br />
-                  #2 BTS SIO • 2013 - 2015 • Lycée Saint-Vincent, Senlis
-                </Blackboard>
-              </GameElement>
-              <GameElement
-                id="platform"
-                left={getX(12)}
-                bottom={getY(GROUND_HEIGHT)}
-                width={getX(6)}
-                height={getX(1)}
-                zIndex={9}
-              >
-                <Platform />
-              </GameElement>
+          <GameEngine.Element
+            {...getElementProps({
+              id: 'platform',
+              left: 12,
+              bottom: GROUND_HEIGHT,
+              width: 6,
+              height: 1,
+            })}
+          >
+            <Platform />
+          </GameEngine.Element>
 
-              {/* Clock */}
-              <GameElement
-                id="clock"
-                left={getX(21)}
-                bottom={getY(GROUND_HEIGHT + 2)}
-                width={getX(1)}
-                height={getX(1)}
-                zIndex={9}
-              >
-                <Clock />
-              </GameElement>
+          {/* Clock */}
+          <GameEngine.Element
+            {...getElementProps({
+              id: 'clock',
+              left: 21,
+              bottom: GROUND_HEIGHT + 2,
+              width: 1,
+              height: 1,
+            })}
+          >
+            <Clock />
+          </GameEngine.Element>
 
-              {/* Coins */}
-              <GameElement
-                id="coins"
-                left={getX(0)}
-                bottom={getY(GROUND_HEIGHT - 1)}
-                width={getX(GRID_WIDTH)}
-                height={getX(3)}
-                zIndex={11}
-              >
-                {COINS.map(
-                  (coin) =>
-                    coin.location === 'formation' && (
-                      <Coin
-                        key={coin.location + coin.position}
-                        width={getX(1)}
-                        height={getY(3)}
-                        taken={isCoinTaken(coin)}
-                        left={getX(coin.position)}
-                      />
-                    )
-                )}
-              </GameElement>
+          {/* Coins */}
+          {COINS.map(
+            (coin, i) =>
+              coin.location === 'formation' && (
+                <GameEngine.Element
+                  key={coin.location + coin.position}
+                  {...getElementProps({
+                    id: `coins-${i}`,
+                    left: coin.position,
+                    bottom: GROUND_HEIGHT - 1,
+                    width: 1,
+                    height: 1,
+                    zIndex: 11,
+                  })}
+                >
+                  <Coin taken={isCoinTaken(coin)} />
+                </GameEngine.Element>
+              )
+          )}
 
-              {/* Ground */}
-              <GameElement
-                data-testid="ground"
-                zIndex={10}
-                bottom={0}
-                left={0}
-                height={getY(GROUND_HEIGHT)}
-                width={getX(GRID_WIDTH)}
-              >
-                <Parquet />
-              </GameElement>
-            </Plan>
-          </GameContainer>
-        )}
+          {/* Ground */}
+          <GameEngine.Element
+            {...getElementProps({
+              'data-testid': 'ground',
+              zIndex: 10,
+              bottom: 0,
+              left: 0,
+              height: GROUND_HEIGHT,
+              width: GRID_WIDTH,
+            })}
+          >
+            <Parquet />
+          </GameEngine.Element>
+        </GameEngine.Plan>
       </GameEngine>
     </>
   );

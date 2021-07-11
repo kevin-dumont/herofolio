@@ -13,6 +13,8 @@
   "ignorePatterns": ["config/**", "scripts/**", "public/**", "*.js", "*.ts"],
   "rules": {
     "react/prop-types": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/react-in-jsx-scope": "off",
     "no-restricted-imports": [
       "error",
       {

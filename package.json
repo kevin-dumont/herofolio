@@ -7,12 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "types:check": "tsc --noEmit",
     "husky": "npm run eslint && npm run test"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^1.6.0",
+    "@reduxjs/toolkit": "^1.6.2",
     "husky": "^6.0.0",
-    "next": "^10.2.3",
+    "next": "11",
     "next-redux-wrapper": "^7.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -22,7 +23,6 @@
     "use-interval": "^1.2.1"
   },
   "devDependencies": {
-    "@svgr/webpack": "4.3.3",
     "@testing-library/dom": "^7.31.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",

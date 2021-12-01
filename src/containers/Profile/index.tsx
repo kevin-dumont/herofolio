@@ -85,12 +85,12 @@ const Profile = () => {
   const timeouts = useRef<NodeJS.Timeout[]>([]);
 
   const closeModal = useCallback(() => {
-    showPopin();
+    hidePopin();
     enableGame();
   }, []);
-
+  
   const openModal = useCallback(() => {
-    hidePopin();
+    showPopin();
     disableGame();
   }, []);
 
@@ -109,7 +109,7 @@ const Profile = () => {
     dispatch(addJump());
 
     if (p === PROFILE_LEFT) {
-      timeouts?.current.push(setTimeout(() => openModal(), 500));
+      timeouts?.current.push(setTimeout(openModal, 500));
     }
   };
 
@@ -121,6 +121,7 @@ const Profile = () => {
 
   const onMove = ({ position }: MoveParams) => {
     dispatch(move({ location: 'profile', position }));
+    console.log('position', position)
 
     COINS.forEach((coin, i) => {
       if (

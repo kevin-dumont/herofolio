@@ -2,52 +2,52 @@ import { CoinType } from '@definitions/entities';
 
 export const COINS: CoinType[] = [
   {
-    location: 'profile',
+    route: 'profile',
     position: 24,
   },
   {
-    location: 'profile',
+    route: 'profile',
     position: 26,
   },
   {
-    location: 'profile',
+    route: 'profile',
     position: 28,
   },
   {
-    location: 'profile',
+    route: 'profile',
     position: 32,
   },
   {
-    location: 'profile',
+    route: 'profile',
     position: 34,
   },
   {
-    location: 'profile',
+    route: 'profile',
     position: 36,
   },
 
   {
-    location: 'profile',
+    route: 'profile',
     position: 54,
   },
   {
-    location: 'profile',
+    route: 'profile',
     position: 56,
   },
   {
-    location: 'profile',
+    route: 'profile',
     position: 58,
   },
   {
-    location: 'formation',
+    route: 'formation',
     position: 10,
   },
   {
-    location: 'formation',
+    route: 'formation',
     position: 13,
   },
   {
-    location: 'formation',
+    route: 'formation',
     position: 16,
   },
 ];

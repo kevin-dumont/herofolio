@@ -25,7 +25,6 @@ import Coin from '@components/Design/Coin';
 import { MainTitle } from '@components/Design/MainTitle';
 import { useAppDispatch, useAppSelector } from '@hooks/useAppStore';
 import {
-  addJump,
   move,
   takeCoin,
   selectCoins,
@@ -39,7 +38,6 @@ import {
   PreloadingMask,
 } from '@containers/Profile/styles';
 import { Factory } from '@components/Design/Factory';
-import { MoveParams } from '@components/GameEngine/types';
 import useIsTouchDevice from '@hooks/useIsTouchDevice';
 import {
   HEIGHT_OFFSET,
@@ -84,54 +82,21 @@ const Profile = () => {
 
   const timeouts = useRef<NodeJS.Timeout[]>([]);
 
-  const closeModal = useCallback(() => {
-    showPopin();
+  const closeProfileModal = useCallback(() => {
+    hidePopin();
     enableGame();
   }, []);
 
-  const openModal = useCallback(() => {
-    hidePopin();
+  const openProfileModal = useCallback(() => {
+    showPopin();
     disableGame();
   }, []);
 
-  const onTop = (p: number) => {
-    if (p === SCHOOL_LEFT + 6) {
-      timeouts?.current.push(
-        setTimeout(() => {
-          dispatch(move({ location: 'formation', position: 2 }));
-          router.push('/formation');
-        }, 200)
-      );
-    }
-  };
-
-  const onJump = (p: number) => {
-    dispatch(addJump());
-
-    if (p === PROFILE_LEFT) {
-      timeouts?.current.push(setTimeout(() => openModal(), 500));
-    }
-  };
-
   const isCoinTaken = (coin: CoinType) =>
     !!coins.find(
-      ({ location, position }) =>
-        coin.location === location && coin.position === position
+      ({ route: location, position }) =>
+        coin.route === location && coin.position === position
     );
-
-  const onMove = ({ position }: MoveParams) => {
-    dispatch(move({ location: 'profile', position }));
-
-    COINS.forEach((coin, i) => {
-      if (
-        coin.location === 'profile' &&
-        position === coin.position &&
-        !isCoinTaken(coin)
-      ) {
-        dispatch(takeCoin(COINS[i]));
-      }
-    });
-  };
 
   const preload = () => {
     if (timeouts?.current) {
@@ -157,28 +122,27 @@ const Profile = () => {
   }, []);
 
   const {
-    canJump,
-    isJumping,
-    heroLeft,
-    isWalking,
     centerPosition,
-    positionInTheGrid,
-    width,
-    height,
-    getY,
-    getX,
+    xPosition,
     isLoading,
     getElementProps,
     getPlanProps,
+    getHeroProps,
+    getGameEngineProps,
+    getHeroElementProps,
   } = useGameEngine({
-    onJump,
-    onTop,
-    onMove,
+    route: 'profile',
     initPosition: heroPositions.profile,
     isActive: isGameEnabled,
     maxRightOffset: GRID_WIDTH,
     nbLines: GRID_HEIGHT,
     elementWidth: GRID_ELEMENT_WIDTH,
+    heroPositioning: {
+      width: 1,
+      height: HERO_SIZE,
+      y: GROUND_HEIGHT,
+      jumpHeight: JUMP,
+    },
   });
 
   return (
@@ -187,52 +151,37 @@ const Profile = () => {
       <GameLoader show={isLoading} />
 
       <GameEngine
-        width={width}
-        height={height}
+        {...getGameEngineProps()}
         background={
-          !isPreloading && positionInTheGrid < LANDSCAPE_CHANGE
-            ? '#79d4ff'
-            : '#ffcde2'
+          !isPreloading && xPosition < LANDSCAPE_CHANGE ? '#79d4ff' : '#ffcde2'
         }
       >
         {/* Hero */}
         <GameEngine.Element
-          {...getElementProps({
-            id: 'instructions',
-            left: heroLeft,
-            bottom: GROUND_HEIGHT,
-            width: 1,
-            height: HERO_SIZE,
-            zIndex: 10,
-          })}
+          {...getHeroElementProps({ id: 'hero', zIndex: 10 })}
         >
-          <Hero
-            isWalking={isWalking && canJump}
-            jumpHeight={getY(JUMP)}
-            isJumping={isJumping}
-            show={!isLoading}
-          />
+          <Hero {...getHeroProps()} />
         </GameEngine.Element>
 
         {/* Instructions */}
-        <GameEngine.Element
-          {...getElementProps({
-            id: 'instructions',
-            left: centerPosition - 2,
-            bottom: 0,
-            width: 6,
-            height: GROUND_HEIGHT,
-            zIndex: 11,
-          })}
-        >
-          {(nbJump === 0 || !hasMove) && (
-            <CommandsHelper>
-              {!isTouchDevice
-                ? `Use your keyboard arrows to move and space to jump!`
-                : `Use the commands on the right to move and jump!`}
-            </CommandsHelper>
-          )}
-        </GameEngine.Element>
+        {!isTouchDevice && (
+          <GameEngine.Element
+            {...getElementProps({
+              id: 'instructions',
+              left: centerPosition - 2,
+              bottom: 0,
+              width: 6,
+              height: GROUND_HEIGHT,
+              zIndex: 11,
+            })}
+          >
+            {(nbJump === 0 || !hasMove) && (
+              <CommandsHelper>
+                Use your keyboard arrows to move and space to jump!
+              </CommandsHelper>
+            )}
+          </GameEngine.Element>
+        )}
 
         <GameEngine.Plan {...getPlanProps(1)}>
           {/* Main title */}
@@ -258,23 +207,20 @@ const Profile = () => {
               width: 1,
               height: 1,
               zIndex: 6,
+              onCollision: () => {
+                setTimeout(openProfileModal, 500);
+              },
             })}
           >
-            <Case
-              isJumping={isJumping && positionInTheGrid === PROFILE_LEFT}
-              jumpHeight={getY(1)}
-              onClick={openModal}
-            >
-              Profile
-            </Case>
+            <Case>Profile</Case>
           </GameEngine.Element>
 
           {/* Coins */}
           {COINS.map(
             (coin, i) =>
-              coin.location === 'profile' && (
+              coin.route === 'profile' && (
                 <GameEngine.Element
-                  key={coin.location + coin.position}
+                  key={coin.route + coin.position}
                   {...getElementProps({
                     id: `coins-${i}`,
                     left: coin.position,
@@ -282,6 +228,9 @@ const Profile = () => {
                     width: 1,
                     height: 1,
                     zIndex: 11,
+                    onCollision: () => {
+                      dispatch(takeCoin(COINS[i]));
+                    },
                   })}
                 >
                   <Coin taken={isCoinTaken(coin)} />
@@ -314,6 +263,14 @@ const Profile = () => {
               width: 13,
               height: SCHOOL_HEIGHT,
               zIndex: 6,
+              onTopPress: () => {
+                timeouts?.current.push(
+                  setTimeout(() => {
+                    dispatch(move({ route: 'formation', position: 2 }));
+                    router.push('/formation');
+                  }, 200)
+                );
+              },
             })}
           >
             <School />
@@ -363,13 +320,10 @@ const Profile = () => {
             <Ground
               grassColor="#b1ec54"
               groundColor="#b8a48c"
-              opacity={
-                !isPreloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
-              }
+              opacity={!isPreloading && xPosition < LANDSCAPE_CHANGE ? 0 : 1}
             />
           </GameEngine.Element>
         </GameEngine.Plan>
-
         {/* Second plan trees */}
         <GameEngine.Plan {...getPlanProps(2)}>
           <GameEngine.Element
@@ -394,7 +348,6 @@ const Profile = () => {
             <Bamboos left={2320} zIndex={-1} scale={0.4} rotate={2} />{' '}
           </GameEngine.Element>
         </GameEngine.Plan>
-
         <GameEngine.Plan {...getPlanProps(3)}>
           <GameEngine.Element
             {...getElementProps({
@@ -407,13 +360,10 @@ const Profile = () => {
             <Forest />
             <Forest
               color="#8ebd43"
-              opacity={
-                !isPreloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
-              }
+              opacity={!isPreloading && xPosition < LANDSCAPE_CHANGE ? 0 : 1}
             />
           </GameEngine.Element>
         </GameEngine.Plan>
-
         <GameEngine.Plan {...getPlanProps(4)}>
           <GameEngine.Element
             {...getElementProps({
@@ -436,17 +386,13 @@ const Profile = () => {
               moutainWidth={5}
               mountainHeight={15}
               background="#9e8791"
-              opacity={
-                !isPreloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
-              }
+              opacity={!isPreloading && xPosition < LANDSCAPE_CHANGE ? 0 : 1}
             />
           </GameEngine.Element>
         </GameEngine.Plan>
-
         <GameEngine.Plan {...getPlanProps(5)}>
-          <Clouds getX={getX} getY={getY} GameElement={GameEngine.Element} />
+          <Clouds getProps={getElementProps} />
         </GameEngine.Plan>
-
         <GameEngine.Element
           {...getElementProps({
             'data-testid': 'sun',
@@ -459,23 +405,19 @@ const Profile = () => {
         >
           <Sun
             color="#ffffcc"
-            opacity={
-              !isPreloading && positionInTheGrid < LANDSCAPE_CHANGE ? 0 : 1
-            }
+            opacity={!isPreloading && xPosition < LANDSCAPE_CHANGE ? 0 : 1}
           />
           <Sun
-            opacity={
-              !isPreloading && positionInTheGrid < LANDSCAPE_CHANGE ? 1 : 0
-            }
+            opacity={!isPreloading && xPosition < LANDSCAPE_CHANGE ? 1 : 0}
           />
         </GameEngine.Element>
       </GameEngine>
 
-      <Modal show={isPopinShown} onEscapePress={closeModal}>
+      <Modal show={isPopinShown} onEscapePress={closeProfileModal}>
         {({ CloseButton, Container }) => (
           <>
             <CloseButton
-              onClick={closeModal}
+              onClick={closeProfileModal}
               size={4}
               ariaLabel="CLose profile modal"
             />

@@ -1,9 +1,9 @@
-import styled, { css, keyframes } from "styled-components";
+import styled, { css, keyframes } from 'styled-components';
 
-const camel = "#e5c56c";
-const shoes = "#7c5e5e";
-const beige = "#ffe1af";
-const gray = "#808080";
+const camel = '#e5c56c';
+const shoes = '#7c5e5e';
+const beige = '#ffe1af';
+const gray = '#808080';
 
 const hat = `
   radial-gradient(7px 7px at calc(50% + 33px) 22px, ${gray} 49%, ${gray}00 50%) no-repeat,
@@ -58,7 +58,6 @@ const walk = keyframes`
 export interface HeroProps {
   isWalking: boolean;
   isJumping: boolean;
-  jumpHeight: number;
   show: boolean;
 }
 
@@ -105,18 +104,8 @@ export const Hero = styled.div<HeroProps>`
       }
     `}
 
-  ${({ isJumping, jumpHeight }) =>
-    isJumping &&
-    css`
-      transform: translate3d(0, ${-jumpHeight}px, 0);
-
-      @media screen and (max-height: 600px) {
-        transform: scale(0.8) translate3d(0, ${-jumpHeight}px, 0);
-      }
-    `}
-
   &:before {
-    content: " ";
+    content: ' ';
     position: absolute;
     top: 0;
     bottom: 0;

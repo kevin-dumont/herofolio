@@ -22,7 +22,7 @@ const useSizes = () => {
       window?.addEventListener('orientationchange', onResize);
     }
 
-    return function cleanUp() {
+    return () => {
       window?.removeEventListener('resize', onResize);
 
       if ('onorientationchange' in window) {

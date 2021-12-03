@@ -1,4 +1,4 @@
-export type Location =
+export type Route =
   | 'profile'
   | 'skills'
   | 'experiences'
@@ -6,6 +6,6 @@ export type Location =
   | 'formation';
 
 export interface CoinType {
-  location: Location;
+  route: Route;
   position: number;
 }

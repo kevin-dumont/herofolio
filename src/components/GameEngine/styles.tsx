@@ -4,7 +4,7 @@ import {
   ArrowContainerProps,
   ArrowProps,
   GameContainerProps,
-  GameElementProps,
+  GameElementStyleProps,
   PlanProps,
 } from '@components/GameEngine/types';
 import { COMMANDS_COLOR } from '@components/GameEngine/constants';
@@ -73,11 +73,28 @@ export const Plan = styled.div.attrs(({ left }: PlanProps) => ({
     `}
 `;
 
-export const GameElement = styled.div.attrs(({ left }: GameElementProps) => ({
-  style: {
-    transform: `translate3d(calc(${left}px), 0, 0)`,
-  },
-}))<GameElementProps>`
+const getTransform = (
+  height: number,
+  left?: number,
+  top?: number,
+  bottom?: number
+) => {
+  if (top !== undefined) {
+    return `translate3d(calc(${left}px), ${top}px, 0)`;
+  }
+  if (bottom !== undefined) {
+    return `translate3d(calc(${left}px), calc(100% - ${bottom + height}px), 0)`;
+  }
+  return `translate3d(calc(${left}px), 0, 0)`;
+};
+
+export const GameElement = styled.div.attrs(
+  ({ left, top, bottom, height }: GameElementStyleProps) => ({
+    style: {
+      transform: getTransform(height, left, top, bottom),
+    },
+  })
+)<GameElementStyleProps>`
   transition: transform 0.2s linear 0s;
   position: absolute;
   display: flex;
@@ -86,8 +103,18 @@ export const GameElement = styled.div.attrs(({ left }: GameElementProps) => ({
   backface-visibility: hidden;
   pointer-events: none;
 
-  ${({ width, height, top, bottom, transition, zIndex }) =>
+  ${({ width, height, transition, zIndex, top, bottom }) =>
     css`
+      ${top !== undefined &&
+      css`
+        top: 0;
+      `}
+
+      ${bottom !== undefined &&
+      css`
+        bottom: 0;
+      `}
+        
       ${width !== undefined &&
       css`
         width: ${width}px;
@@ -96,16 +123,6 @@ export const GameElement = styled.div.attrs(({ left }: GameElementProps) => ({
       ${height !== undefined &&
       css`
         height: ${height}px;
-      `}
-
-      ${top !== undefined &&
-      css`
-        top: ${top}px;
-      `}
-
-      ${bottom !== undefined &&
-      css`
-        bottom: ${bottom}px;
       `}
 
       ${transition &&

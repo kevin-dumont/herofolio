@@ -10,7 +10,7 @@ export const GRID_SIZES_SMALL = {
 export const GRID_SIZES_LARGE = {
   GRID_HEIGHT: 10,
   GROUND_HEIGHT: 2,
-  HERO_SIZE: 3,
+  HERO_SIZE: 2,
   JUMP: 3,
 };
 

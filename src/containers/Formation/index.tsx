@@ -22,8 +22,6 @@ import { Window } from '@components/Design/Window';
 import { StudentDesk } from '@components/Design/StudentDesk';
 import { Clock } from '@components/Design/Clock';
 import { Platform } from '@components/Design/Platform';
-import { SCHOOL_LEFT } from '@containers/Profile/constants';
-import { MoveParams } from '@components/GameEngine/types';
 import { useGameEngine } from '@components/GameEngine/hooks';
 import {
   GRID_WIDTH,
@@ -55,36 +53,11 @@ const Formation = () => {
 
   const timeouts = useRef<NodeJS.Timeout[]>([]);
 
-  const onTop = (p: number) => {
-    if (p === 2) {
-      timeouts?.current.push(
-        setTimeout(() => {
-          dispatch(move({ location: 'profile', position: SCHOOL_LEFT + 6 }));
-          router.push('/');
-        }, 200)
-      );
-    }
-  };
-
   const isCoinTaken = (coin: CoinType) =>
     !!coins.find(
-      ({ location, position }) =>
-        coin.location === location && coin.position === position
+      ({ route: location, position }) =>
+        coin.route === location && coin.position === position
     );
-
-  const onMove = ({ position }: MoveParams) => {
-    dispatch(move({ location: 'formation', position }));
-
-    COINS.forEach((coin, i) => {
-      if (
-        coin.location === 'formation' &&
-        position === coin.position &&
-        !isCoinTaken(coin)
-      ) {
-        dispatch(takeCoin(COINS[i]));
-      }
-    });
-  };
 
   useEffect(
     () => () => {
@@ -97,47 +70,37 @@ const Formation = () => {
   );
 
   const {
-    canJump,
-    isJumping,
-    heroLeft,
-    isWalking,
-    width,
-    height,
-    getY,
     isLoading,
+    getGameEngineProps,
     getPlanProps,
     getElementProps,
+    getHeroProps,
+    getHeroElementProps,
   } = useGameEngine({
-    onTop,
-    onMove,
+    route: 'formation',
     isActive: true,
     initPosition: heroPositions.formation,
     maxRightOffset: GRID_WIDTH,
     nbLines: GRID_HEIGHT,
     elementWidth: GRID_ELEMENT_WIDTH,
+    heroPositioning: {
+      width: 1,
+      height: HERO_SIZE,
+      y: GROUND_HEIGHT - 1,
+      jumpHeight: JUMP,
+    },
   });
 
   return (
     <>
       <GameLoader show={isLoading} />
 
-      <GameEngine width={width} height={height} background="#aff39e ">
+      <GameEngine {...getGameEngineProps()} background="#aff39e ">
         {/* Hero */}
         <GameEngine.Element
-          {...getElementProps({
-            zIndex: 10,
-            left: heroLeft,
-            height: HERO_SIZE,
-            width: 1,
-            bottom: GROUND_HEIGHT - 1,
-          })}
+          {...getHeroElementProps({ id: 'hero', zIndex: 10 })}
         >
-          <Hero
-            isWalking={isWalking && canJump}
-            jumpHeight={getY(JUMP + 1)}
-            isJumping={isJumping}
-            show={!isLoading}
-          />
+          <Hero {...getHeroProps()} />
         </GameEngine.Element>
 
         <GameEngine.Plan {...getPlanProps(1)}>
@@ -196,6 +159,14 @@ const Formation = () => {
               bottom: GROUND_HEIGHT,
               width: 3,
               height: 3,
+              onTopPress: () => {
+                timeouts?.current.push(
+                  setTimeout(() => {
+                    dispatch(move({ route: 'profile', position: 44 }));
+                    router.push('/');
+                  }, 200)
+                );
+              },
             })}
           >
             <Door />
@@ -264,9 +235,9 @@ const Formation = () => {
           {/* Coins */}
           {COINS.map(
             (coin, i) =>
-              coin.location === 'formation' && (
+              coin.route === 'formation' && (
                 <GameEngine.Element
-                  key={coin.location + coin.position}
+                  key={coin.route + coin.position}
                   {...getElementProps({
                     id: `coins-${i}`,
                     left: coin.position,
@@ -274,6 +245,9 @@ const Formation = () => {
                     width: 1,
                     height: 1,
                     zIndex: 11,
+                    onCollision: () => {
+                      dispatch(takeCoin(COINS[i]));
+                    },
                   })}
                 >
                   <Coin taken={isCoinTaken(coin)} />

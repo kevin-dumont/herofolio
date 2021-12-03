@@ -2,15 +2,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { RootState } from '@store/index';
-import { CoinType, Location } from '@definitions/entities';
+import { CoinType, Route } from '@definitions/entities';
 
 interface GameState {
   coins: CoinType[];
   startTimestamp: number;
   nbJump: number;
   hasMove: boolean;
-  heroPositions: {
-    [k in Location]: number;
+  heroLeftInRoutes: {
+    [k in Route]: number;
   };
   heroLeft: number;
   firstPlanLeft: number;
@@ -25,7 +25,7 @@ const initialState: GameState = {
   startTimestamp: 0,
   nbJump: 0,
   hasMove: false,
-  heroPositions: {
+  heroLeftInRoutes: {
     experiences: 3,
     hobbies: 2,
     profile: 3,
@@ -52,11 +52,11 @@ export const gameSlice = createSlice({
     },
     move: (
       state,
-      action: PayloadAction<{ location: Location; position: number }>
+      action: PayloadAction<{ route: Route; position: number }>
     ) => {
-      const { location, position } = action.payload;
+      const { route, position } = action.payload;
 
-      state.heroPositions[location] = position;
+      state.heroLeftInRoutes[route] = position;
       state.hasMove = true;
     },
   },
@@ -68,6 +68,6 @@ export const selectCoins = (state: RootState) => state.game.coins;
 export const selectHasMove = (state: RootState) => state.game.hasMove;
 export const selectNbJump = (state: RootState) => state.game.nbJump;
 export const selectHeroPositions = (state: RootState) =>
-  state.game.heroPositions;
+  state.game.heroLeftInRoutes;
 
 export default gameSlice.reducer;

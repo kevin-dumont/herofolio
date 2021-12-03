@@ -1,15 +1,14 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-import { GameElement as GameElementUI } from '@components/GameEngine/styles';
+import GameEngine from '@components/GameEngine';
 import { Cloud } from '@components/Design/Cloud';
+import { GameElementProps } from '@components/GameEngine/types';
 
 export interface CloudsProps {
-  GameElement: typeof GameElementUI;
-  getY: (distance: number) => number;
-  getX: (distance: number) => number;
+  getProps: (params: GameElementProps) => GameElementProps;
 }
 
-const Clouds = ({ GameElement, getY, getX }: CloudsProps) => {
+const Clouds = ({ getProps }: CloudsProps) => {
   const clouds = [
     { top: 2, left: 1 },
     { top: 3, left: 9 },
@@ -22,19 +21,21 @@ const Clouds = ({ GameElement, getY, getX }: CloudsProps) => {
   return (
     <>
       {clouds.map((cloud) => (
-        <GameElement
+        <GameEngine.Element
           key={`${cloud.top + cloud.left}`}
-          zIndex={1}
-          top={getY(cloud.top)}
-          left={getX(cloud.left)}
-          width={getX(3)}
-          height={getY(2)}
+          {...getProps({
+            zIndex: 1,
+            top: cloud.top,
+            left: cloud.left,
+            width: 3,
+            height: 2,
+          })}
         >
           <Cloud />
-        </GameElement>
+        </GameEngine.Element>
       ))}
     </>
   );
 };
 
-export default React.memo(Clouds);
+export default memo(Clouds);

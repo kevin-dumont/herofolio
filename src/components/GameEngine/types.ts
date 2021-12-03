@@ -1,3 +1,5 @@
+import { Route } from '@definitions/entities';
+
 export type Direction = 'up' | 'left' | 'right' | 'down';
 
 export interface CommandsProps {
@@ -46,7 +48,7 @@ export interface PlanProps extends BaseProps {
   zIndex?: number;
 }
 
-export interface GameElementProps extends BaseProps {
+export interface GameElementStyleProps extends BaseProps {
   width: number;
   height: number;
   left: number;
@@ -54,6 +56,23 @@ export interface GameElementProps extends BaseProps {
   top?: number;
   zIndex?: number;
   transition?: string;
+}
+
+export interface HeroPositioning {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface GameElementProps extends GameElementStyleProps {
+  heroPositioning: HeroPositioning;
+  nbLinesInGrid: number;
+  onCollision?: () => void;
+  onTopPress?: () => void;
+  calculateY: (y: number) => number;
+  calculateX: (x: number) => number;
+  topPressed: boolean;
 }
 
 export interface MoveParams {
@@ -67,8 +86,12 @@ export interface GameEngineProps {
   isActive: boolean;
   initPosition?: number;
   nbLines: number;
-  onJump?: (position: number) => any;
-  onTop?: (position: number) => any;
+  heroPositioning: {
+    y: number;
+    width: number;
+    height: number;
+    jumpHeight: number;
+  };
   onResize?: () => any;
-  onMove?: (params: MoveParams) => any;
+  route: Route;
 }

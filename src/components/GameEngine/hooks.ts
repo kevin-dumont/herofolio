@@ -1,35 +1,29 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import useInterval from 'use-interval';
 
 import useKeyPress from '@hooks/useKeyPress';
 import useSizes from '@hooks/useSizes';
-import {
-  GameContainer,
-  Plan,
-  GameElement,
-} from '@components/GameEngine/styles';
-import useIsTouchDevice from '@hooks/useIsTouchDevice';
 
 import { calculateOffsets } from './helpers';
 import { GameElementProps, GameEngineProps, PlanProps } from './types';
-import {
-  FIRST_PLAN_STEP,
-  FITH_PLAN_STEP,
-  FOURTH_PLAN_STEP,
-  SECOND_PLAN_STEP,
-  THIRD_PLAN_STEP,
-} from './constants';
+import { FIRST_PLAN_STEP, PLAN_STEPS } from './constants';
+import { useAppDispatch } from '@hooks/useAppStore';
+import { addJump, move } from '@store/game';
 
 export const useGameEngine = ({
-  onJump,
-  onTop,
+  route,
   onResize,
   elementWidth,
   maxRightOffset,
   isActive,
   initPosition,
-  onMove,
   nbLines,
+  heroPositioning: {
+    height: heroHeight,
+    width: heroWidth,
+    y: heroBottom,
+    jumpHeight,
+  },
 }: GameEngineProps) => {
   const { width, height } = useSizes();
 
@@ -61,9 +55,11 @@ export const useGameEngine = ({
   const bottom = useKeyPress(['ArrowDown', 's']);
   const space = useKeyPress([' ']);
 
+  const dispatch = useAppDispatch();
+
   const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  const positionInTheGrid = heroLeft + -firstPlanLeft;
+  const xPosition = heroLeft - firstPlanLeft;
 
   const canGoToRight =
     maxRightOffset * elementWidth +
@@ -78,9 +74,7 @@ export const useGameEngine = ({
     if (isLoading) return;
     if ((!right && !touchRight) || left) return;
 
-    if (onMove) {
-      onMove({ direction: 'right', position: positionInTheGrid + 1 });
-    }
+    dispatch(move({ route, position: xPosition + 1 }));
 
     if (heroLeft >= centerPosition) {
       if (canGoToRight) {
@@ -100,9 +94,7 @@ export const useGameEngine = ({
     if (isLoading) return;
     if ((!left && !touchLeft) || right) return;
 
-    if (onMove) {
-      onMove({ direction: 'left', position: positionInTheGrid - 1 });
-    }
+    dispatch(move({ route, position: xPosition - 1 }));
 
     if (heroLeft > centerPosition || heroLeft < centerPosition) {
       if (heroLeft > 1) {
@@ -118,20 +110,17 @@ export const useGameEngine = ({
   /**
    * Fired when the hero is jumping
    */
-  const onJumping = () => {
+  const onJump = () => {
     if (isLoading) return;
 
     if (canJump && isActive) {
+      dispatch(addJump());
       setIsJumping(true);
       setCanJump(false);
 
       if (timeouts?.current) {
         timeouts.current.push(setTimeout(() => setIsJumping(false), 300));
         timeouts.current.push(setTimeout(() => setCanJump(true), 400));
-      }
-
-      if (onJump && isActive) {
-        onJump(positionInTheGrid);
       }
     }
   };
@@ -176,7 +165,7 @@ export const useGameEngine = ({
 
     timeouts?.current.push(setTimeout(() => setIsLoading(false), 1700));
 
-    if (onResize) onResize();
+    onResize?.();
   };
 
   // Handle moves
@@ -202,20 +191,10 @@ export const useGameEngine = ({
     []
   );
 
-  // Call onTop callback
-  useEffect(() => {
-    if (isLoading) return;
-
-    if ((top || touchTop) && isActive && onTop) {
-      onTop(positionInTheGrid);
-    }
-  }, [top, touchTop]);
-
   // Trigger the jump
   useEffect(() => {
     if (isLoading) return;
-
-    if (space || touchSpace) onJumping();
+    if (space || touchSpace) onJump();
   }, [space, touchSpace]);
 
   // Recalculate offset when user is resizing the window
@@ -225,6 +204,18 @@ export const useGameEngine = ({
 
   const calculateX = (distance: number) => Math.round(distance * elementWidth);
   const calculateY = (distance: number) => Math.round(distance * lineHeight);
+
+  const heroFinalBottom = useMemo(
+    () => (isJumping ? heroBottom + jumpHeight : heroBottom),
+    [jumpHeight, heroBottom, isJumping]
+  );
+
+  const heroPositioning = {
+    x: xPosition,
+    y: nbLines - heroFinalBottom - heroHeight,
+    width: heroWidth,
+    height: heroHeight,
+  };
 
   const getCommandProps = () => ({
     onSpaceChange: (v: boolean) => {
@@ -239,49 +230,65 @@ export const useGameEngine = ({
     onArrowDownChange: (v: boolean) => setTouchBottom(v),
   });
 
-  const getElementProps = ({
-    width,
-    height,
-    top,
-    bottom,
-    left,
-    ...rest
-  }: GameElementProps) => ({
-    ...rest,
-    left: calculateX(left),
-    height: calculateY(height),
-    width: calculateX(width),
-    top: top !== undefined ? calculateY(top) : undefined,
-    bottom: bottom !== undefined ? calculateY(bottom) : undefined,
+  const getElementProps = (
+    props: Omit<
+      GameElementProps,
+      | 'calculateY'
+      | 'calculateX'
+      | 'heroPositioning'
+      | 'nbLinesInGrid'
+      | 'topPressed'
+    >
+  ): GameElementProps => ({
+    ...props,
+    nbLinesInGrid: nbLines,
+    heroPositioning,
+    calculateX,
+    calculateY,
+    topPressed: (top || touchTop) && isActive,
+  });
+
+  const getHeroElementProps = (
+    props: Pick<GameElementProps, 'zIndex' | 'id' | 'data-testid'>
+  ): GameElementProps => ({
+    ...props,
+    heroPositioning,
+    nbLinesInGrid: nbLines,
+    height: heroHeight,
+    width: heroWidth,
+    left: heroLeft,
+    bottom: heroFinalBottom,
+    calculateX,
+    calculateY,
+    topPressed: false,
   });
 
   const getPlanProps = (planNumber: 1 | 2 | 3 | 4 | 5): PlanProps => ({
-    left: calculateX(firstPlanLeft * [1, 0.4, 0.3, 0.2, 0.05][planNumber - 1]),
+    left: calculateX(firstPlanLeft * PLAN_STEPS[planNumber - 1]),
     'data-testid': `${planNumber}`,
     zIndex: [5, 4, 3, 2, 1][planNumber - 1],
   });
 
-  return {
-    heroLeft,
+  const getHeroProps = () => ({
     isJumping,
-    isWalking,
-    isLoading,
-    canJump,
-    positionInTheGrid,
-    top: top || touchTop,
-    space: space || touchSpace,
-    bottom: bottom || touchBottom,
-    screenSize,
-    centerPosition,
+    isWalking: isWalking && canJump,
+    show: !isLoading,
+  });
+
+  const getGameEngineProps = () => ({
     height,
     width,
-    GameContainer,
-    GameElement,
-    Plan,
-    getX: calculateX,
-    getY: calculateY,
+  });
+
+  return {
+    isLoading,
+    xPosition,
+    centerPosition,
     getCommandProps,
     getElementProps,
     getPlanProps,
+    getHeroProps,
+    getGameEngineProps,
+    getHeroElementProps,
   };
 };

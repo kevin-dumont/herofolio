@@ -7,7 +7,7 @@ interface FadeOutType {
 
 export const FadeOut = styled.div<FadeOutType>`
   opacity: 1;
-  pointer-events: none;
+  /* pointer-events: none; */
   transition: opacity ${(p) => p.duration} ease;
 
   ${({ hide }) =>

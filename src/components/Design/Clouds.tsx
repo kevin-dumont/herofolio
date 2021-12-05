@@ -2,11 +2,9 @@ import React, { memo } from 'react';
 
 import GameEngine from '@components/GameEngine';
 import { Cloud } from '@components/Design/Cloud';
-import { GameElementProps } from '@components/GameEngine/types';
+import { WithGameElementProps } from '@components/GameEngine/types';
 
-export interface CloudsProps {
-  getProps: (params: GameElementProps) => GameElementProps;
-}
+export type CloudsProps = WithGameElementProps<{}>;
 
 const Clouds = ({ getProps }: CloudsProps) => {
   const clouds = [

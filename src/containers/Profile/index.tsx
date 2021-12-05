@@ -1,19 +1,12 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { useRouter } from 'next/router';
 
-import { CoinType } from '@definitions/entities';
-import {
-  GRID_ELEMENT_WIDTH,
-  GRID_SIZES_LARGE,
-  GRID_SIZES_SMALL,
-} from '@constants/grid';
-import { COINS } from '@constants/coins';
+import { GRID_ELEMENT_WIDTH, GRID_SIZES_LARGE, GRID_SIZES_SMALL } from '@constants/grid';
 import useMedia from '@hooks/useMedia';
 import GameEngine from '@components/GameEngine';
 import { useGameEngine } from '@components/GameEngine/hooks';
 import { Hero } from '@components/Design/Hero';
 import { Ground } from '@components/Design/Ground';
-import Modal from '@components/Modal';
 import { Sun } from '@components/Design/Sun';
 import Clouds from '@components/Design/Clouds';
 import { Mountains } from '@components/Design/Moutains';
@@ -21,24 +14,10 @@ import { Forest } from '@components/Design/Forest';
 import { Tree, Bamboos } from '@components/Design/Vegetation';
 import School from '@components/Design/School';
 import Case from '@components/Design/Case';
-import Coin from '@components/Design/Coin';
 import { MainTitle } from '@components/Design/MainTitle';
 import { useAppDispatch, useAppSelector } from '@hooks/useAppStore';
-import {
-  move,
-  takeCoin,
-  selectCoins,
-  selectHeroPositions,
-  selectHasMove,
-  selectNbJump,
-} from '@store/game';
-import {
-  ModalRight,
-  CommandsHelper,
-  PreloadingMask,
-} from '@containers/Profile/styles';
+import { move, takeCoin, selectHeroPositions } from '@store/game';
 import { Factory } from '@components/Design/Factory';
-import useIsTouchDevice from '@hooks/useIsTouchDevice';
 import {
   HEIGHT_OFFSET,
   SCHOOL_LEFT,
@@ -49,6 +28,11 @@ import {
 } from '@containers/Profile/constants';
 import { useBoolean } from '@hooks/useBoolean';
 import GameLoader from '@components/GameLoader';
+import { useTimeouts } from '@hooks/useTimeouts';
+import { useCoins } from '@components/Design/Coin/hooks';
+import ModalProfile from '@components/ProfileModal';
+import Coins from '@components/Coins';
+import Instructions from '@components/Instructions';
 
 const Profile = () => {
   const {
@@ -62,25 +46,20 @@ const Profile = () => {
     SUN_LEFT,
     PROFILE_BOTTOM,
   } = useMedia((_, height) =>
-    height < 600
-      ? { ...GRID_SIZES_SMALL, ...HEIGHT_OFFSET.SMALL }
-      : { ...GRID_SIZES_LARGE, ...HEIGHT_OFFSET.LARGE }
+    height < 600 ? { ...GRID_SIZES_SMALL, ...HEIGHT_OFFSET.SMALL } : { ...GRID_SIZES_LARGE, ...HEIGHT_OFFSET.LARGE }
   );
 
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const isTouchDevice = useIsTouchDevice();
 
-  const coins = useAppSelector(selectCoins);
   const heroPositions = useAppSelector(selectHeroPositions);
-  const hasMove = useAppSelector(selectHasMove);
-  const nbJump = useAppSelector(selectNbJump);
 
   const [isPopinShown, showPopin, hidePopin] = useBoolean();
-  const [isGameEnabled, enableGame, disableGame] = useBoolean();
-  const [isPreloading, beginPreload, finishPreload] = useBoolean();
+  const [isProfileCaseHit, hitProfileCase, stopHitProfileCase] = useBoolean();
+  const [isGameEnabled, enableGame, disableGame] = useBoolean(true);
 
-  const timeouts = useRef<NodeJS.Timeout[]>([]);
+  const [coins, isCoinTaken] = useCoins('profile');
+  const [addTimeout] = useTimeouts();
 
   const closeProfileModal = useCallback(() => {
     hidePopin();
@@ -90,35 +69,6 @@ const Profile = () => {
   const openProfileModal = useCallback(() => {
     showPopin();
     disableGame();
-  }, []);
-
-  const isCoinTaken = (coin: CoinType) =>
-    !!coins.find(
-      ({ route: location, position }) =>
-        coin.route === location && coin.position === position
-    );
-
-  const preload = () => {
-    if (timeouts?.current) {
-      timeouts.current.push(setTimeout(beginPreload, 500));
-      timeouts.current.push(
-        setTimeout(() => {
-          finishPreload();
-          enableGame();
-        }, 1000)
-      );
-    }
-  };
-
-  useEffect(() => {
-    preload();
-
-    return () => {
-      if (timeouts?.current) {
-        timeouts.current.forEach(clearTimeout);
-        timeouts.current = [];
-      }
-    };
   }, []);
 
   const {
@@ -145,43 +95,32 @@ const Profile = () => {
     },
   });
 
+  const onDoorOpen = useCallback(() => {
+    addTimeout(() => {
+      dispatch(move({ route: 'formation', position: 2 }));
+      router.push('/formation');
+    }, 200);
+  }, []);
+
+  const onProfileCaseHit = useCallback(() => {
+    addTimeout(hitProfileCase, 100);
+    addTimeout(stopHitProfileCase, 400);
+    addTimeout(openProfileModal, 650);
+  }, []);
+
   return (
     <>
-      {isPreloading && <PreloadingMask />}
+      <ModalProfile show={isPopinShown} onClose={closeProfileModal} />
       <GameLoader show={isLoading} />
 
-      <GameEngine
-        {...getGameEngineProps()}
-        background={
-          !isPreloading && xPosition < LANDSCAPE_CHANGE ? '#79d4ff' : '#ffcde2'
-        }
-      >
+      <GameEngine {...getGameEngineProps()} background={xPosition < LANDSCAPE_CHANGE ? '#79d4ff' : '#ffcde2'}>
         {/* Hero */}
-        <GameEngine.Element
-          {...getHeroElementProps({ id: 'hero', zIndex: 10 })}
-        >
+        <GameEngine.Element {...getHeroElementProps({ id: 'hero', zIndex: 10 })}>
           <Hero {...getHeroProps()} />
         </GameEngine.Element>
 
         {/* Instructions */}
-        {!isTouchDevice && (
-          <GameEngine.Element
-            {...getElementProps({
-              id: 'instructions',
-              left: centerPosition - 2,
-              bottom: 0,
-              width: 6,
-              height: GROUND_HEIGHT,
-              zIndex: 11,
-            })}
-          >
-            {(nbJump === 0 || !hasMove) && (
-              <CommandsHelper>
-                Use your keyboard arrows to move and space to jump!
-              </CommandsHelper>
-            )}
-          </GameEngine.Element>
-        )}
+        <Instructions getProps={getElementProps} leftPosition={centerPosition - 2} height={GROUND_HEIGHT} />
 
         <GameEngine.Plan {...getPlanProps(1)}>
           {/* Main title */}
@@ -203,56 +142,24 @@ const Profile = () => {
             {...getElementProps({
               id: 'profile',
               left: PROFILE_LEFT,
-              bottom: PROFILE_BOTTOM,
+              bottom: isProfileCaseHit ? PROFILE_BOTTOM + 1 : PROFILE_BOTTOM,
               width: 1,
               height: 1,
               zIndex: 6,
-              onCollision: () => {
-                setTimeout(openProfileModal, 500);
-              },
+              onCollision: onProfileCaseHit,
             })}
           >
             <Case>Profile</Case>
           </GameEngine.Element>
 
           {/* Coins */}
-          {COINS.map(
-            (coin, i) =>
-              coin.route === 'profile' && (
-                <GameEngine.Element
-                  key={coin.route + coin.position}
-                  {...getElementProps({
-                    id: `coins-${i}`,
-                    left: coin.position,
-                    bottom: GROUND_HEIGHT,
-                    width: 1,
-                    height: 1,
-                    zIndex: 11,
-                    onCollision: () => {
-                      dispatch(takeCoin(COINS[i]));
-                    },
-                  })}
-                >
-                  <Coin taken={isCoinTaken(coin)} />
-                </GameEngine.Element>
-              )
-          )}
-
-          {/* preload to prevent laggy coin animation */}
-          {isPreloading && (
-            <GameEngine.Element
-              {...getElementProps({
-                id: `preloading-coins`,
-                left: -1,
-                bottom: GROUND_HEIGHT,
-                width: 1,
-                height: 1,
-                zIndex: 0,
-              })}
-            >
-              <Coin taken />
-            </GameEngine.Element>
-          )}
+          <Coins
+            coins={coins}
+            isCoinTaken={isCoinTaken}
+            takeCoin={(id: number) => dispatch(takeCoin(id))}
+            getProps={getElementProps}
+            yPosition={GROUND_HEIGHT}
+          />
 
           {/* House */}
           <GameEngine.Element
@@ -263,14 +170,7 @@ const Profile = () => {
               width: 13,
               height: SCHOOL_HEIGHT,
               zIndex: 6,
-              onTopPress: () => {
-                timeouts?.current.push(
-                  setTimeout(() => {
-                    dispatch(move({ route: 'formation', position: 2 }));
-                    router.push('/formation');
-                  }, 200)
-                );
-              },
+              onTopPress: onDoorOpen,
             })}
           >
             <School />
@@ -317,14 +217,11 @@ const Profile = () => {
             })}
           >
             <Ground grassColor="#4ba446" groundColor="#896443" />
-            <Ground
-              grassColor="#b1ec54"
-              groundColor="#b8a48c"
-              opacity={!isPreloading && xPosition < LANDSCAPE_CHANGE ? 0 : 1}
-            />
+            <Ground grassColor="#b1ec54" groundColor="#b8a48c" opacity={xPosition < LANDSCAPE_CHANGE ? 0 : 1} />
           </GameEngine.Element>
         </GameEngine.Plan>
-        {/* Second plan trees */}
+
+        {/* Plan 2 -> trees */}
         <GameEngine.Plan {...getPlanProps(2)}>
           <GameEngine.Element
             {...getElementProps({
@@ -345,9 +242,11 @@ const Profile = () => {
             <Bamboos left={2050} zIndex={-1} scale={0.5} rotate={-1} />
             <Bamboos left={2070} zIndex={-1} scale={0.5} rotate={0} />
             <Bamboos left={2300} zIndex={-1} scale={0.4} rotate={0} />
-            <Bamboos left={2320} zIndex={-1} scale={0.4} rotate={2} />{' '}
+            <Bamboos left={2320} zIndex={-1} scale={0.4} rotate={2} />
           </GameEngine.Element>
         </GameEngine.Plan>
+
+        {/* Plan 3 -> Forest */}
         <GameEngine.Plan {...getPlanProps(3)}>
           <GameEngine.Element
             {...getElementProps({
@@ -358,12 +257,11 @@ const Profile = () => {
             })}
           >
             <Forest />
-            <Forest
-              color="#8ebd43"
-              opacity={!isPreloading && xPosition < LANDSCAPE_CHANGE ? 0 : 1}
-            />
+            <Forest color="#8ebd43" opacity={xPosition < LANDSCAPE_CHANGE ? 0 : 1} />
           </GameEngine.Element>
         </GameEngine.Plan>
+
+        {/* Plan 4 -> mountains */}
         <GameEngine.Plan {...getPlanProps(4)}>
           <GameEngine.Element
             {...getElementProps({
@@ -373,26 +271,23 @@ const Profile = () => {
               left: 0,
             })}
           >
-            <Mountains
-              angle={165}
-              percent={65}
-              moutainWidth={5}
-              mountainHeight={15}
-              background="#6bbce2"
-            />
+            <Mountains angle={165} percent={65} moutainWidth={5} mountainHeight={15} background="#6bbce2" />
             <Mountains
               angle={165}
               percent={65}
               moutainWidth={5}
               mountainHeight={15}
               background="#9e8791"
-              opacity={!isPreloading && xPosition < LANDSCAPE_CHANGE ? 0 : 1}
+              opacity={xPosition < LANDSCAPE_CHANGE ? 0 : 1}
             />
           </GameEngine.Element>
         </GameEngine.Plan>
+
+        {/* Plan 5 -> Clouds */}
         <GameEngine.Plan {...getPlanProps(5)}>
           <Clouds getProps={getElementProps} />
         </GameEngine.Plan>
+
         <GameEngine.Element
           {...getElementProps({
             'data-testid': 'sun',
@@ -403,44 +298,10 @@ const Profile = () => {
             zIndex: 0,
           })}
         >
-          <Sun
-            color="#ffffcc"
-            opacity={!isPreloading && xPosition < LANDSCAPE_CHANGE ? 0 : 1}
-          />
-          <Sun
-            opacity={!isPreloading && xPosition < LANDSCAPE_CHANGE ? 1 : 0}
-          />
+          <Sun color="#ffffcc" opacity={xPosition < LANDSCAPE_CHANGE ? 0 : 1} />
+          <Sun opacity={xPosition < LANDSCAPE_CHANGE ? 1 : 0} />
         </GameEngine.Element>
       </GameEngine>
-
-      <Modal show={isPopinShown} onEscapePress={closeProfileModal}>
-        {({ CloseButton, Container }) => (
-          <>
-            <CloseButton
-              onClick={closeProfileModal}
-              size={4}
-              ariaLabel="CLose profile modal"
-            />
-            <Container>
-              <ModalRight>
-                <h2>
-                  I&apos;m <strong>Kévin Dumont</strong>, a web artisan
-                </h2>
-                <p>
-                  I&apos;m creative. I create websites in their entirety.
-                  Design, development, deployment. So, we can say I&apos;m a
-                  full stack developer. I love challenges. I&apos;m a real
-                  passionate. I&apos;m 100% self-taught, I&apos;m interested by
-                  the back-end web development since I was 14. Today, I prefer
-                  the front-end development because it&apos;s more
-                  sophisticated. I am still learning new technologies to stay up
-                  to date and improve my knowledge.
-                </p>
-              </ModalRight>
-            </Container>
-          </>
-        )}
-      </Modal>
     </>
   );
 };

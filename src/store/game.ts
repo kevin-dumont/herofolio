@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import type { RootState } from '@store/index';
 import { CoinType, Route } from '@definitions/entities';
+import { COINS } from '@constants/coins';
 
 interface GameState {
   coins: CoinType[];
@@ -44,16 +45,15 @@ export const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
-    takeCoin: (state, action: PayloadAction<CoinType>) => {
-      state.coins.push(action.payload);
+    takeCoin: (state, action: PayloadAction<number>) => {
+      const coin = COINS.find(({ id }) => id === action.payload);
+
+      if (coin) state.coins.push(coin);
     },
     addJump: (state) => {
       state.nbJump += 1;
     },
-    move: (
-      state,
-      action: PayloadAction<{ route: Route; position: number }>
-    ) => {
+    move: (state, action: PayloadAction<{ route: Route; position: number }>) => {
       const { route, position } = action.payload;
 
       state.heroLeftInRoutes[route] = position;
@@ -67,7 +67,6 @@ export const { addJump, move, takeCoin } = gameSlice.actions;
 export const selectCoins = (state: RootState) => state.game.coins;
 export const selectHasMove = (state: RootState) => state.game.hasMove;
 export const selectNbJump = (state: RootState) => state.game.nbJump;
-export const selectHeroPositions = (state: RootState) =>
-  state.game.heroLeftInRoutes;
+export const selectHeroPositions = (state: RootState) => state.game.heroLeftInRoutes;
 
 export default gameSlice.reducer;

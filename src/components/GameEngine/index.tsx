@@ -1,20 +1,11 @@
 import { memo, PropsWithChildren, useEffect } from 'react';
-import { intersection, range } from 'lodash';
 
 import Commands from '@components/GameEngine/Commands';
-import {
-  GameElement,
-  GameContainer,
-  Plan,
-} from '@components/GameEngine/styles';
-import type {
-  GameContainerProps,
-  GameElementProps,
-} from '@components/GameEngine/types';
+import { GameElement, GameContainer, Plan } from '@components/GameEngine/styles';
+import { isHeroOnElement } from '@components/GameEngine/helpers';
+import type { GameContainerProps, GameElementProps } from '@components/GameEngine/types';
 
-const GameEngine = (props: PropsWithChildren<GameContainerProps>) => (
-  <GameContainer {...props} />
-);
+const GameEngine = (props: PropsWithChildren<GameContainerProps>) => <GameContainer {...props} />;
 
 GameEngine.Commands = memo(Commands);
 
@@ -35,33 +26,41 @@ GameEngine.Element = ({
 }: PropsWithChildren<GameElementProps>) => {
   const { x: heroLeft, y: heroTop, height: heroHeight } = heroPositioning;
 
-  const isHeroOnElement = () => {
-    const isOnSameYPosition = () => {
-      const elementTop = top || nbLinesInGrid - (bottom as number) - height;
-      const elementBottom = elementTop + height;
-      const heroBottom = heroTop + heroHeight;
-
-      const heroRange = range(heroTop, heroBottom + 1);
-      const elementRange = range(elementTop, elementBottom + 1);
-      const intersect = intersection(elementRange, heroRange);
-
-      return intersect.length > 0;
-    };
-
-    const elementRight = left + width;
-    const isOnSameXPosition = heroLeft >= left && heroLeft <= elementRight;
-
-    return isOnSameXPosition && isOnSameYPosition();
-  };
-
   useEffect(() => {
-    if (onCollision && isHeroOnElement()) {
+    if (
+      onCollision &&
+      isHeroOnElement({
+        elHeight: height,
+        elWidth: width,
+        elTop: top,
+        elBottom: bottom,
+        elLeft: left,
+        nbLinesInGrid,
+        heroLeft,
+        heroTop,
+        heroHeight,
+      })
+    ) {
       onCollision();
     }
   }, [heroLeft, heroTop, onCollision]);
 
   useEffect(() => {
-    if (onTopPress && topPressed && isHeroOnElement()) {
+    if (
+      onTopPress &&
+      topPressed &&
+      isHeroOnElement({
+        elHeight: height,
+        elWidth: width,
+        elTop: top,
+        elBottom: bottom,
+        elLeft: left,
+        nbLinesInGrid,
+        heroLeft,
+        heroTop,
+        heroHeight,
+      })
+    ) {
       onTopPress();
     }
   }, [topPressed, onTopPress]);

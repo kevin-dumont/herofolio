@@ -31,8 +31,11 @@ const rotate = keyframes`
 `;
 
 const hideEffect = keyframes`
+  95% {
+    transform: rotateY(1080deg) translate3d(0, -200px, 0) scale(1);
+  }
   100% {
-    transform: rotateY(1080deg) translate3d(0, -200px, 0);
+    transform: rotateY(1080deg) translate3d(0, -200px, 0) scale(0);
   }
 `;
 
@@ -55,7 +58,7 @@ const CoinUi = styled.div<CoinUiProps>`
   ${({ taken }) =>
     taken &&
     css`
-      animation: ${hideEffect} 0.5s ease;
+      animation: ${hideEffect} 0.5s ease forwards;
     `}
 
   .side,
@@ -110,13 +113,11 @@ const Wrapper = styled.div`
 
 const Coin = ({ taken }: CoinProps) => (
   <Wrapper>
-    <FadeOut duration="0.5s" hide={taken}>
-      <CoinUi taken={taken}>
-        <div className="side heads">$</div>
-        <div className="side tails">$</div>
-      </CoinUi>
-    </FadeOut>
+    <CoinUi taken={taken}>
+      <div className="side heads">$</div>
+      <div className="side tails">$</div>
+    </CoinUi>
   </Wrapper>
 );
 
-export default memo(Coin);
+export default Coin;

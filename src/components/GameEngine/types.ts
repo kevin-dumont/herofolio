@@ -75,6 +75,11 @@ export interface GameElementProps extends GameElementStyleProps {
   topPressed: boolean;
 }
 
+export type GameElementParams = Omit<
+  GameElementProps,
+  'calculateY' | 'calculateX' | 'heroPositioning' | 'nbLinesInGrid' | 'topPressed'
+>;
+
 export interface MoveParams {
   direction: 'left' | 'right';
   position: number;
@@ -95,3 +100,7 @@ export interface GameEngineProps {
   onResize?: () => any;
   route: Route;
 }
+
+export type WithGameElementProps<T extends Record<string, any>> = T & {
+  getProps: (params: GameElementParams) => GameElementProps;
+};

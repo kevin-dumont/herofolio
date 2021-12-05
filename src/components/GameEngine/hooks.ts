@@ -1,14 +1,27 @@
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo, useReducer, useCallback } from 'react';
 import useInterval from 'use-interval';
 
 import useKeyPress from '@hooks/useKeyPress';
 import useSizes from '@hooks/useSizes';
 
 import { calculateOffsets } from './helpers';
-import { GameElementProps, GameEngineProps, PlanProps } from './types';
+import { GameElementParams, GameElementProps, GameEngineProps, PlanProps } from './types';
 import { FIRST_PLAN_STEP, PLAN_STEPS } from './constants';
 import { useAppDispatch } from '@hooks/useAppStore';
-import { addJump, move } from '@store/game';
+import { addJump, move as appMove } from '@store/game';
+import { useTimeouts } from '@hooks/useTimeouts';
+import {
+  getInitialState,
+  jump,
+  moveBack,
+  moveForward,
+  movePlan,
+  reducer,
+  stopJump,
+  move,
+  setLoading,
+  touchDirection,
+} from './reducer';
 
 export const useGameEngine = ({
   route,
@@ -18,136 +31,108 @@ export const useGameEngine = ({
   isActive,
   initPosition,
   nbLines,
-  heroPositioning: {
-    height: heroHeight,
-    width: heroWidth,
-    y: heroBottom,
-    jumpHeight,
-  },
+  heroPositioning: { height: heroHeight, width: heroWidth, y: heroBottom, jumpHeight },
 }: GameEngineProps) => {
   const { width, height } = useSizes();
 
-  const screenSize = Math.round(width / elementWidth) - 1;
-  const centerPosition = Math.round(screenSize / 2) - 1;
+  const screenSize = useMemo(() => Math.round(width / elementWidth) - 1, [width, elementWidth]);
+  const centerPosition = useMemo(() => Math.round(screenSize / 2) - 1, [screenSize]);
 
-  const [initialHeroLeft, initialFirstPlanLeft] = calculateOffsets(
-    centerPosition,
-    maxRightOffset,
-    screenSize,
-    initPosition
+  const [initialHeroLeft, initialFirstPlanLeft] = useMemo(
+    () => calculateOffsets(centerPosition, maxRightOffset, screenSize, initPosition),
+    [centerPosition, maxRightOffset, screenSize, initPosition]
   );
 
-  const [heroLeft, setHeroLeft] = useState(initialHeroLeft);
-  const [firstPlanLeft, setFirstPlanLeft] = useState(initialFirstPlanLeft);
-  const [isJumping, setIsJumping] = useState(false);
-  const [isWalking, setIsWalking] = useState(false);
-  const [canJump, setCanJump] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
-  const [touchSpace, setTouchSpace] = useState(false);
-  const [touchTop, setTouchTop] = useState(false);
-  const [touchLeft, setTouchLeft] = useState(false);
-  const [touchRight, setTouchRight] = useState(false);
-  const [touchBottom, setTouchBottom] = useState(false);
+  const initialState = getInitialState({ heroLeft: initialHeroLeft, firstPlanLeft: initialFirstPlanLeft });
+  const [gameState, gameDispatch] = useReducer(reducer, initialState);
 
-  const top = useKeyPress(['ArrowUp', 'z']);
-  const left = useKeyPress(['ArrowLeft', 'q']);
-  const right = useKeyPress(['ArrowRight', 'd']);
-  const bottom = useKeyPress(['ArrowDown', 's']);
-  const space = useKeyPress([' ']);
+  const { heroLeft, firstPlanLeft, isJumping, isWalking, canJump, isLoading, up, left, right } = gameState;
 
-  const dispatch = useAppDispatch();
+  const upKeyPressed = useKeyPress(['ArrowUp', 'z']);
+  const leftKeyPressed = useKeyPress(['ArrowLeft', 'q']);
+  const rightKeyPressed = useKeyPress(['ArrowRight', 'd']);
+  const downKeyPressed = useKeyPress(['ArrowDown', 's']);
+  const spaceKeyPressed = useKeyPress([' ']);
 
-  const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const appDispatch = useAppDispatch();
+
+  const [addTimeout, clearTimeouts] = useTimeouts();
 
   const xPosition = heroLeft - firstPlanLeft;
 
-  const canGoToRight =
-    maxRightOffset * elementWidth +
-      firstPlanLeft * elementWidth -
-      elementWidth >=
-    width;
+  const canGoToRight = maxRightOffset * elementWidth + firstPlanLeft * elementWidth - elementWidth >= width;
 
-  /**
-   * Handle the right move
-   */
-  const rightHandler = () => {
-    if (isLoading) return;
-    if ((!right && !touchRight) || left) return;
+  // Handle moves
+  useInterval(
+    () => {
+      if (!isActive) return;
+      if (isLoading) return;
 
-    dispatch(move({ route, position: xPosition + 1 }));
+      const rightHandler = () => {
+        if (!right || left) return;
 
-    if (heroLeft >= centerPosition) {
-      if (canGoToRight) {
-        setFirstPlanLeft(firstPlanLeft - FIRST_PLAN_STEP);
-      } else if (heroLeft < screenSize - 1) {
-        setHeroLeft(heroLeft + 1);
-      }
-    } else {
-      setHeroLeft(heroLeft + 1);
+        appDispatch(appMove({ route, position: xPosition + 1 }));
+
+        if (heroLeft >= centerPosition) {
+          if (canGoToRight) {
+            gameDispatch(movePlan(firstPlanLeft - FIRST_PLAN_STEP));
+          } else if (heroLeft < screenSize - 1) {
+            gameDispatch(moveForward());
+          }
+        } else {
+          gameDispatch(moveForward());
+        }
+      };
+
+      const leftHandler = () => {
+        if (!left || right) return;
+
+        appDispatch(appMove({ route, position: xPosition - 1 }));
+
+        if (heroLeft > centerPosition || heroLeft < centerPosition) {
+          if (heroLeft > 1) {
+            gameDispatch(moveBack());
+          }
+        } else if (firstPlanLeft < 0) {
+          gameDispatch(movePlan(firstPlanLeft + FIRST_PLAN_STEP));
+        } else {
+          gameDispatch(moveBack());
+        }
+      };
+
+      rightHandler();
+      leftHandler();
+    },
+    200,
+    true
+  );
+
+  useEffect(() => {
+    gameDispatch(touchDirection('up', upKeyPressed));
+  }, [upKeyPressed]);
+
+  useEffect(() => {
+    gameDispatch(touchDirection('left', leftKeyPressed));
+  }, [leftKeyPressed]);
+
+  useEffect(() => {
+    gameDispatch(touchDirection('right', rightKeyPressed));
+  }, [rightKeyPressed]);
+
+  useEffect(() => {
+    gameDispatch(touchDirection('down', downKeyPressed));
+  }, [downKeyPressed]);
+
+  useEffect(() => {
+    if (spaceKeyPressed) {
+      appDispatch(addJump());
+      gameDispatch(jump());
+      addTimeout(() => gameDispatch(stopJump()), 300);
     }
-  };
+  }, [spaceKeyPressed]);
 
-  /**
-   * Handle the left move
-   */
-  const leftHandler = () => {
-    if (isLoading) return;
-    if ((!left && !touchLeft) || right) return;
-
-    dispatch(move({ route, position: xPosition - 1 }));
-
-    if (heroLeft > centerPosition || heroLeft < centerPosition) {
-      if (heroLeft > 1) {
-        setHeroLeft(heroLeft - 1);
-      }
-    } else if (firstPlanLeft < 0) {
-      setFirstPlanLeft(firstPlanLeft + FIRST_PLAN_STEP);
-    } else {
-      setHeroLeft(heroLeft - 1);
-    }
-  };
-
-  /**
-   * Fired when the hero is jumping
-   */
-  const onJump = () => {
-    if (isLoading) return;
-
-    if (canJump && isActive) {
-      dispatch(addJump());
-      setIsJumping(true);
-      setCanJump(false);
-
-      if (timeouts?.current) {
-        timeouts.current.push(setTimeout(() => setIsJumping(false), 300));
-        timeouts.current.push(setTimeout(() => setCanJump(true), 400));
-      }
-    }
-  };
-
-  /**
-   * Fired when the hero is walking
-   */
-  const handleHeroWalking = () => {
-    if (isLoading) return;
-
-    if (
-      isActive &&
-      ((touchLeft && heroLeft > 1) ||
-        (touchRight && heroLeft < screenSize - 1) ||
-        (!right && left && heroLeft > 1) ||
-        (!left && right && heroLeft < screenSize - 1))
-    ) {
-      setIsWalking(true);
-    } else {
-      setIsWalking(false);
-    }
-  };
-
-  /**
-   * Handle screen resize
-   */
-  const handleScreenResize = () => {
+  // Recalculate offset when user is resizing the window
+  useEffect(() => {
     const currentPositionInGrid = Math.abs(firstPlanLeft) + Math.abs(heroLeft);
     const [newHeroLeft, newFirstPlanLeft] = calculateOffsets(
       centerPosition,
@@ -156,54 +141,21 @@ export const useGameEngine = ({
       currentPositionInGrid
     );
 
-    setHeroLeft(newHeroLeft);
-    setFirstPlanLeft(newFirstPlanLeft);
-    setIsLoading(true);
+    gameDispatch(move(newHeroLeft));
+    gameDispatch(movePlan(newFirstPlanLeft));
+    gameDispatch(setLoading(true));
 
-    timeouts?.current.forEach(clearTimeout);
-    timeouts.current = [];
+    clearTimeouts();
 
-    timeouts?.current.push(setTimeout(() => setIsLoading(false), 1700));
+    addTimeout(() => gameDispatch(setLoading(false)), 1700);
 
     onResize?.();
-  };
-
-  // Handle moves
-  useInterval(
-    () => {
-      if (isActive) {
-        rightHandler();
-        leftHandler();
-      }
-      handleHeroWalking();
-    },
-    200,
-    true
-  );
-
-  useEffect(
-    () => () => {
-      if (timeouts.current) {
-        timeouts.current.forEach(clearTimeout);
-        timeouts.current = [];
-      }
-    },
-    []
-  );
-
-  // Trigger the jump
-  useEffect(() => {
-    if (isLoading) return;
-    if (space || touchSpace) onJump();
-  }, [space, touchSpace]);
-
-  // Recalculate offset when user is resizing the window
-  useEffect(handleScreenResize, [width, height]);
+  }, [width, height]);
 
   const lineHeight = height / nbLines;
 
-  const calculateX = (distance: number) => Math.round(distance * elementWidth);
-  const calculateY = (distance: number) => Math.round(distance * lineHeight);
+  const calculateX = useCallback((distance: number) => Math.round(distance * elementWidth), [elementWidth]);
+  const calculateY = useCallback((distance: number) => Math.round(distance * lineHeight), [lineHeight]);
 
   const heroFinalBottom = useMemo(
     () => (isJumping ? heroBottom + jumpHeight : heroBottom),
@@ -217,40 +169,33 @@ export const useGameEngine = ({
     height: heroHeight,
   };
 
-  const getCommandProps = () => ({
-    onSpaceChange: (v: boolean) => {
-      if (v) {
-        setTouchSpace(true);
-        timeouts?.current.push(setTimeout(() => setTouchSpace(false), 300));
-      }
-    },
-    onArrowUpChange: (v: boolean) => setTouchTop(v),
-    onArrowLeftChange: (v: boolean) => setTouchLeft(v),
-    onArrowRightChange: (v: boolean) => setTouchRight(v),
-    onArrowDownChange: (v: boolean) => setTouchBottom(v),
-  });
+  const getCommandProps = useMemo(
+    () => ({
+      onSpaceChange: (v: boolean) => {
+        if (v) {
+          appDispatch(addJump());
+          gameDispatch(jump());
+          addTimeout(() => gameDispatch(stopJump()), 300);
+        }
+      },
+      onArrowUpChange: (v: boolean) => gameDispatch(touchDirection('up', v)),
+      onArrowLeftChange: (v: boolean) => gameDispatch(touchDirection('left', v)),
+      onArrowRightChange: (v: boolean) => gameDispatch(touchDirection('right', v)),
+      onArrowDownChange: (v: boolean) => gameDispatch(touchDirection('down', v)),
+    }),
+    []
+  );
 
-  const getElementProps = (
-    props: Omit<
-      GameElementProps,
-      | 'calculateY'
-      | 'calculateX'
-      | 'heroPositioning'
-      | 'nbLinesInGrid'
-      | 'topPressed'
-    >
-  ): GameElementProps => ({
+  const getElementProps = (props: GameElementParams): GameElementProps => ({
     ...props,
     nbLinesInGrid: nbLines,
     heroPositioning,
     calculateX,
     calculateY,
-    topPressed: (top || touchTop) && isActive,
+    topPressed: up,
   });
 
-  const getHeroElementProps = (
-    props: Pick<GameElementProps, 'zIndex' | 'id' | 'data-testid'>
-  ): GameElementProps => ({
+  const getHeroElementProps = (props: Pick<GameElementProps, 'zIndex' | 'id' | 'data-testid'>): GameElementProps => ({
     ...props,
     heroPositioning,
     nbLinesInGrid: nbLines,

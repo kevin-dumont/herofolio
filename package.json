@@ -8,11 +8,12 @@
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "types:check": "tsc --noEmit",
-    "husky": "npm run eslint && npm run test"
+    "husky": "npm run lint && npm run types:check",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.6.2",
-    "husky": "^6.0.0",
+    "husky": "^7.0.4",
     "lodash": "^4.17.21",
     "next": "^12.0.4",
     "next-redux-wrapper": "^7.0.0",

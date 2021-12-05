@@ -2,11 +2,9 @@ import React, { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/router';
 
 import { GRID_ELEMENT_WIDTH, FORMATION_GRID_SIZES_LARGE, FORMATION_GRID_SIZES_SMALL } from '@constants/grid';
-import { COINS } from '@constants/coins';
 import useMedia from '@hooks/useMedia';
 import GameEngine from '@components/GameEngine';
 import { Hero } from '@components/Design/Hero';
-import Coin from '@components/Design/Coin';
 import { useAppDispatch, useAppSelector } from '@hooks/useAppStore';
 import { move, takeCoin, selectHeroPositions } from '@store/game';
 import { Door } from '@components/Design/School';

@@ -1,7 +1,6 @@
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
-import { MEDIA, FONTS } from '@constants/theme';
-import { get3dTextShadow } from '@services/helpers';
+import { MEDIA } from '@constants/theme';
 
 export const ModalRight = styled.div`
   padding: 30px;

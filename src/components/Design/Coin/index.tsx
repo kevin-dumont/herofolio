@@ -1,7 +1,5 @@
-import React, { memo } from 'react';
+import React from 'react';
 import styled, { keyframes, css } from 'styled-components';
-
-import { FadeOut } from '@components/Design/FadeOut';
 
 export interface CoinProps {
   taken: boolean;
